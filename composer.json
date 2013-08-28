@@ -1,0 +1,9 @@
+{
+    "require": {
+		"react/react": "dev-master",
+		"react/socket-client": "dev-master"
+    },
+    "autoload": {
+        "psr-0" : { "": "src/" }
+    }
+}

@@ -1,0 +1,10 @@
+{
+	"server": {
+		"client_interface": "0.0.0.0",
+		"client_port": 9023,
+		"api_interface": "0.0.0.0",
+		"api_port": 1337,
+		"mud_ip": "70.184.91.247",
+		"mud_port": 23
+	}
+}
