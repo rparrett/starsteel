@@ -116,7 +116,7 @@ that leads to the west and southeast.
         print "Hi2";
     });
 
-$input = new InputHandler($loop);
+$input = new Matt\InputHandler($loop);
 $input->on('input', function($line) use (&$capturedStream, &$options) {
     if ($line == 'auto') {
         $options['auto'] = !$options['auto'];

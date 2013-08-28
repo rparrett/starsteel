@@ -1,4 +1,6 @@
 {
 	"username":"user",
-	"password":"pass"
+	"password":"pass",
+	"mud_ip": "70.184.91.247",
+	"mud_port": 23
 }
