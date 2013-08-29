@@ -65,7 +65,7 @@ $input->on('input', function($line) use (&$capturedStream, &$options) {
 
     if (null !== $capturedStream) {
         echo "Writing $line\n";
-        $capturedStream->write($line."\n");
+        $capturedStream->write($line."\r\n");
     }
 });
 
