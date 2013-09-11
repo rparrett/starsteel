@@ -31,14 +31,16 @@ $capturedStream = null;
 $options = array('hexdump' => true, 'line' => false, 'username'=>'', 'password'=>'', 'auto' => true);
 $options = array_replace($options, json_decode(file_get_contents('./config-client.json'), true));
 
+$character = new Character();
 
 $connector->create($options['mud_ip'], $options['mud_port'])
-    ->then(function ($stream) use (&$capturedStream, &$options, $options) {
+    ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character) {
         echo "Connected to {$options['mud_ip']}:{$options['mud_port']}\n";
 
         $capturedStream = $stream;
-        
-        $character   = new Character($capturedStream);
+
+        $character->setStream($capturedStream);
+
         $lineHandler = new LineHandler($capturedStream, $character, $options);
         $dataHandler = new DataHandler($capturedStream, $lineHandler);
 
@@ -50,17 +52,32 @@ $connector->create($options['mud_ip'], $options['mud_port'])
     });
 
 $input = new Matt\InputHandler($loop);
-$input->on('input', function($line) use (&$capturedStream, &$options) {
-    if ($line == 'auto') {
+$input->on('input', function($line) use (&$capturedStream, &$options, &$character) {
+    if ($line == '/auto') {
         $options['auto'] = !$options['auto'];
+
+        return;
     }
 
-    if ($line == 'hexdump') {
+    if ($line == '/hexdump') {
         $options['hexdump'] = !$options['hexdump'];
+
+        return;
     }
 
-    if ($line == 'line') {
+    if ($line == '/line') {
         $options['line'] = !$options['line'];
+
+        return;
+    }
+
+    if ($line == '/stats') {
+        echo "\n";
+        echo "Stats\n";
+        echo "Earned exp: " . $character->earnedExp . "\n";
+        echo "\n";
+
+        return;
     }
 
     if (null !== $capturedStream) {

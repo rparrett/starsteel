@@ -22,15 +22,18 @@ class Character {
     public $attack = "a";
     public $monstersInRoom = array();
     public $earnedExp = 0;
+    public $stream;
 
-    function __construct(&$capturedStream) {
+    function __construct() {
         $this->loggedIn = false;
+    }
 
-        $this->capturedStream = $capturedStream;
+    function setStream(&$stream) {
+        $this->stream = $stream;
     }
 
     function takeStep() {
-        $this->capturedStream->write($this->path[$this->step] . "\r\n");
+        $this->stream->write($this->path[$this->step] . "\r\n");
         $this->step++;
 
         if ($this->step >= count($this->path)) $this->step = 0;
@@ -52,7 +55,7 @@ class Character {
         if (count($this->monstersInRoom) > 0) {
             $monster = $this->monstersInRoom[0];
 
-            $this->capturedStream->write($this->attack . " " . $monster . "\r\n");
+            $this->stream->write($this->attack . " " . $monster . "\r\n");
 
             return true;
         }
