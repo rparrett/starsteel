@@ -119,6 +119,7 @@ class Proxy extends EventEmitter {
                 $this->log_line('S: '.$stripped_line);
             }
 
+
             $this->analyzer->extract_stats($stripped_line, $this->data['stats']);
 
             if (isset($this->data['stats']['hits']) && $this->data['stats']['hits']['current'] <= 0) {
@@ -127,6 +128,10 @@ class Proxy extends EventEmitter {
                 $this->server->close();
 
                 $this->emit('end', array($this));
+            }
+
+            if (false !== strpos(trim($stripped_line), "you can't see anything")) {
+                $this->server->write("star\r\n");
             }
         }
 
