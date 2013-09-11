@@ -45,8 +45,8 @@ $connector->create($options['mud_ip'], $options['mud_port'])
         $capturedStream->on('data', function($data) use (&$options, &$capturedStream, $dataHandler) {
             $dataHandler->handle($data);
         });
-    }, function() {
-        print "Hi2";
+    }, function($e) {
+        echo "Could not connect to mud.\nError ".$e->getMessage()."\n";
     });
 
 $input = new Matt\InputHandler($loop);
