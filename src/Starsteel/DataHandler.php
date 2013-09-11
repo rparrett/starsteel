@@ -58,9 +58,10 @@ class DataHandler {
                             // just pass colors through
 
                             // $this->aline .= "\x1b" . $this->escape;
+                            $this->aline .= "\x1b" . $this->escape;
+                        } else {
+                            $this->aline .= "\x1b" . $this->escape;
                         }
-                        
-                        $this->aline .= "\x1b" . $this->escape;
 
                         $this->escape = "";
                     }
