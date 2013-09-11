@@ -57,8 +57,10 @@ class DataHandler {
                         } elseif (preg_match('/m$/', $this->escape)) {
                             // just pass colors through
 
-                            $this->aline .= "\x1b" . $this->escape;
+                            // $this->aline .= "\x1b" . $this->escape;
                         }
+                        
+                        $this->aline .= "\x1b" . $this->escape;
 
                         $this->escape = "";
                     }
@@ -67,6 +69,14 @@ class DataHandler {
             }
         }
 
+        if (preg_match('/[:?]\s*$/', $this->line, $matches)) {
+            $this->lineHandler->handle($this->line);
+            $this->line = "";
+            $this->lineHandler->handleAnsi($this->aline);
+            $this->aline = "";
+        }
+
+/*
         if ($this->line != "") {
             $this->lineHandler->handle($this->line);
             
@@ -77,7 +87,7 @@ class DataHandler {
             $this->lineHandler->handleAnsi($this->aline);
 
             $this->aline = "";
-        }
+        }*/
     }
 }
 

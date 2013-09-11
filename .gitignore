@@ -1,1 +1,3 @@
 .idea
+vendor
+src/config-client.json

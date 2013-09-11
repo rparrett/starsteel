@@ -38,7 +38,7 @@ $connector->create($options['mud_ip'], $options['mud_port'])
 
         $capturedStream = $stream;
         
-        $character   = new Character();
+        $character   = new Character($capturedStream);
         $lineHandler = new LineHandler($capturedStream, $character, $options);
         $dataHandler = new DataHandler($capturedStream, $lineHandler);
 
