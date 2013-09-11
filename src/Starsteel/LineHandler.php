@@ -78,13 +78,13 @@ class LineHandler {
 
             $attackables = 0;
 
-            $this->character->monsters_in_room = array();
+            $this->character->monstersInRoom = array();
 
             foreach ($here as $monster) {
                 $basename = preg_replace('/(thin|fat|small|big|large|nasty|angry|fierce|short|tall) /', '', $monster);
 
                 if (isset($monsters[$basename])) {
-                    $this->character->monsters_in_room[] = $monster;
+                    $this->character->monstersInRoom[] = $monster;
                 }
             } 
         }
@@ -99,6 +99,10 @@ class LineHandler {
         
         if (preg_match('/(in|into) (the room )?from/', $line, $matches)) {
             $this->capturedStream->write("l\r\n");
+        }
+
+        if (preg_match('/You gain (\d+) experience\./', $line, $matches))  {
+            $this->character->earnedExp += (int) $matches[1];
         }
 
         $this->triggers($this->moreTriggers, $line);
@@ -124,7 +128,7 @@ class LineHandler {
             } else if ($this->character->state == WALKING) {
                  $this->character->fightMonsters() || $this->character->takeStep();
             } else if ($this->character->state == RUNNING) {
-                if (count($this->character->monsters_in_room) > 0) {
+                if (count($this->character->monstersInRoom) > 0) {
                     $this->character->takeStep();
                 } else {
                     $this->character->state = RESTING;
@@ -133,7 +137,7 @@ class LineHandler {
                 }
             }
 
-            $this->character->monsters_in_room = array();
+            $this->character->monstersInRoom = array();
         }
 
         //hex_dump($line, "\n", 48);

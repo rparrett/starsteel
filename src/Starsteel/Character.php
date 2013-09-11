@@ -20,7 +20,8 @@ class Character {
     public $step = 0;
     public $state = INITIALIZING;
     public $attack = "a";
-    public $monsters_in_room = array();
+    public $monstersInRoom = array();
+    public $earnedExp = 0;
 
     function __construct(&$capturedStream) {
         $this->loggedIn = false;
@@ -48,8 +49,8 @@ class Character {
     }
 
     function fightMonsters() {
-        if (count($this->monsters_in_room) > 0) {
-            $monster = $this->monsters_in_room[0];
+        if (count($this->monstersInRoom) > 0) {
+            $monster = $this->monstersInRoom[0];
 
             $this->capturedStream->write($this->attack . " " . $monster . "\r\n");
 
