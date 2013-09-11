@@ -69,7 +69,7 @@ class DataHandler {
             }
         }
 
-        if (preg_match('/[:?]\s*$/', $this->line, $matches)) {
+        if (preg_match('/[:?]\s*(\(Resting\))?\s*$/', $this->line, $matches)) {
             $this->lineHandler->handle($this->line);
             $this->line = "";
             $this->lineHandler->handleAnsi($this->aline);
