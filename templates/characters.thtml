@@ -1,0 +1,73 @@
+<style type="text/css">
+    /*
+    Generic Styling, for Desktops/Laptops
+    */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+        /* Zebra striping */
+    tr:nth-of-type(odd) {
+        background: #eee;
+    }
+    th {
+        background: #333;
+        color: white;
+        font-weight: bold;
+    }
+    td, th {
+        padding: 6px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+</style>
+<table>
+    <thead>
+    <tr>
+        <th>name</th><th>level/race/class</th><th>armor</th></th><th>hits</th><th>mana</th>
+        <?php foreach($stats as $stat) { ?>
+            <th><?php echo $stat; ?></th>
+        <?php } ?>
+        <?php foreach($secondary_stats as $stat) { ?>
+            <th><?php echo $stat; ?></th>
+        <?php } ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach($data as $ip => $row) {
+        $s = $row['stats'];
+        ?>
+    <tr>
+        <td>
+            <?php echo $s['name']; ?>
+        </td>
+        <td>
+            Level <?php echo $s['level']; ?> <?php echo $s['race']; ?> <?php echo $s['class']; ?>
+        </td>
+        <td>
+            <?php echo $s['armour_class']; ?>
+        </td>
+        <td>
+            <?php if (isset($s['hits']) && isset($s['hits']['max']) && $s['hits']['max']) { ?>
+            <?php echo $s['hits']['current']; ?> / <?php echo $s['hits']['max']; ?> (<?php echo sprintf("%.2f%%", 100 * $s['hits']['current'] / $s['hits']['max']); ?>)
+            <?php } ?>
+        </td>
+        <td>
+            <?php if (isset($s['mana']) && isset($s['mana']['max']) && $s['mana']['max']) { ?>
+            <?php echo $s['mana']['current']; ?> / <?php echo $s['mana']['max']; ?> (<?php echo sprintf("%.2f%%", 100 * $s['mana']['current'] / $s['mana']['max']); ?>)
+            <?php } ?>
+        </td>
+        <?php foreach($stats as $stat) { ?>
+            <td>
+                <?php if (isset($s[$stat])) { echo $s[$stat]; } ?>
+            </td>
+        <?php } ?>
+        <?php foreach($secondary_stats as $stat) { ?>
+            <td>
+                <?php if (isset($s[$stat])) { echo $s[$stat]; } ?>
+            </td>
+        <?php } ?>
+    </tr>
+    </tbody>
+    <?php } ?>
+</table>

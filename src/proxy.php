@@ -12,6 +12,10 @@ use React\Http\Response;
 use Matt\ConsoleColor2;
 use Matt\MajorMUDProxy;
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('error_log', __DIR__.'/../error_log');
+
 ////////////////////////////////////////////////////////////////
 // Init
 ////////////////////////////////////////////////////////////////
@@ -32,22 +36,52 @@ $loop = new React\EventLoop\StreamSelectLoop();
 ////////////////////////////////////////////////////////////////
 
 $data = array('started' => time());
+$fake_app = array('templ.cache_dir'=>'', 'templ.dir'=>__DIR__.'/../templates');
 
-$app = function ($request, $response) use (&$conns, &$data) {
-	$response->writeHead(200, array('Content-Type' => 'application/json'));
-	$conns_data = array();
+$templ = new Matt\Templates\Templates($fake_app);
 
-    // Show each proxy's extracted data
-	foreach($conns as $conn) {
+$app = function (Request $request, $response) use (&$conns, &$data, &$templ) {
+    $conns_data = array();
+
+    // Get each proxy's extracted data
+    foreach($conns as $conn) {
+        if (!$conn->getRemoteAddress()) {
+            // TODO: Fix
+            continue;
+        }
+
         $proxy = $conns[$conn];
         $conn_data = $proxy->getData();
         $conn_data['ip'] = $conn->getRemoteAddress();
         $conns_data[$proxy->getId()] = $conn_data;
-	}
+    }
 
-    $data['uptime'] = time() - $data['started'];
+    echo "API Request: ".$request->getPath()." ".$request->getQuery()."\n";
 
-    $response->end(json_encode(array('result'=>true, 'data'=>$data, 'conns'=>$conns_data)));
+    // Routes
+
+    if ($request->getPath() == '/json') {
+        $response->writeHead(200, array('Content-Type' => 'application/json'));
+
+
+        $data['uptime'] = time() - $data['started'];
+
+        $response->end(json_encode(array('result'=>true, 'data'=>$data, 'conns'=>$conns_data)));
+    } elseif ($request->getPath() == '/') {
+        $response->writeHead(200, array('Content-Type' => 'text/html'));
+        $stats = array(
+            'strength', 'health', 'agility', 'intellect', 'willpower', 'charm'
+        );
+        $secondary_stats = array(
+            'magicres', 'perception', 'stealth', 'spellcasting', 'tracking', 'thievery', 'traps', 'picklocks', 'martial_arts'
+        );
+        $templ_data = array('data'=>$conns_data, 'stats'=>$stats, 'secondary_stats'=>$secondary_stats);
+        var_dump($templ_data);
+        $response->end($templ->render('characters.thtml', $templ_data));
+    } else {
+        $response->writeHead(404, array('Content-Type' => 'text/html'));
+        $response->end('<html><body>Sorry, not found!</body></html>');
+    }
 };
 
 $api_socket = new React\Socket\Server($loop);
