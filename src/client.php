@@ -85,7 +85,21 @@ $input->on('char', function($char) {
 
 $input->on('line', function($line) use (&$capturedStream, &$options, &$character, &$loop) {
     if ($line == '/auto') {
-        $options['auto'] = !$options['auto'];
+
+        
+        $character->auto = !$character->auto;
+
+        if ($character->auto) {
+            echo "\n\n";
+            echo "--> Auto on\n";
+            echo "\n";
+
+            $capturedStream->write("l\r\n");
+        } else {
+            echo "\n\n";
+            echo "--> Auto off\n";
+            echo "\n";
+        }
 
         return;
     }
@@ -103,7 +117,7 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
     }
 
     if ($line == '/stats') {
-        echo "\n";
+        echo "\n\n";
         echo "Stats\n";
         echo "Earned exp: " . $character->earnedExp . "\n";
         echo "\n";

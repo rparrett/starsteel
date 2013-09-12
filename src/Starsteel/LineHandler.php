@@ -21,6 +21,54 @@ class LineHandler {
         $this->character = $character;
     }
 
+    function main() {
+        if ($this->character->state == LOOKING) {
+            $this->character->state = NOTHING;
+            return;
+        }
+
+        // If monsters here, attack or run
+        if (count($this->character->monstersInRoom) > 0) {
+            // Reset no. of steps for safe escape
+            // if (!isSneaking)
+            $this->character->ranDistance = 0;
+
+            if (!$this->character->auto) { // || IsConfused || IsParalysed || IsBlind || IsFollowing
+                $this->character->fightMonsters();
+            } else {
+                if ($this->character->runHealth()) { // || MonsterCnt > MaxMonsters || IsRunPath
+                    $this->character->takeStep(true);
+                } else {
+                    $this->character->fightMonsters();
+                }
+            }
+        } else {
+            // No monsters, need to run further to
+            // get a safe distance away?
+
+            if ($this->character->auto && $this->character->ranDistance < $this->character->runDistance) { // && !isFollowing
+                $this->character->takeStep(false);
+            } else {
+                if (!$this->character->auto) { // || IsFollowing
+                    $this->character->healUp();
+                } else {
+                    if ($this->character->restHealth() || 
+                        (!$this->character->fullHealth() && $this->character->state == RESTING))
+                    {
+                        $this->character->healUp();
+                    } else {
+                        // if (IsBlind || IsConfused || IsParalysed) { 
+                        // $this->character->healUp();
+                        // } else {
+                        $this->character->takeStep(false);
+                        // }
+                    }
+                }
+                // 
+            }
+        }
+    }
+
     function handle($line) {
         if (!$this->character->loggedIn) {
             $triggered = $this->triggers($this->loginTriggers, $line);
@@ -31,26 +79,17 @@ class LineHandler {
             }
         }
 
-        if (preg_match('/^\[HP=(\d+)\/MA=(\d+)\]/', $line, $matches)) {
+        if (preg_match('/^\[HP=(\d+)\/MA=(\d+)\]:( \(Resting\) )?/', $line, $matches)) {
             $this->character->hp = (double) $matches[1];
             $this->character->ma = (double) $matches[2];
 
-            if ($this->character->state == INITIALIZING) {
-                $this->character->state = WALKING;
-            }
+            // Mudwalk seems to distinguish between
+            // "prompts without more stuff"
+            // and "prompts with stuff"
+            // and only takes actions if there's not stuff.
 
-            if ($this->character->runHealth()) {
-                if ($this->character->state == FIGHTING) {
-                    $this->character->state = RUNNING;
-
-                    $this->character->takeStep();
-                }
-            } else if ($this->character->fullHealth()) {
-                if ($this->character->state == RESTING) {
-                    $this->character->state = WALKING;
-
-                    $this->capturedStream->write("l\r\n");
-                }
+            if (strlen($line) == strlen($matches[0])) {
+                $this->main();
             }
         }
             
@@ -90,22 +129,34 @@ class LineHandler {
         }
         
         if (preg_match('/Combat Off/', $line, $matches)) {
-            $this->character->state = RESTING;
+            $this->character->state = NOTHING;
         } 
         
         if (preg_match('/\*Combat Engaged\*/', $line, $matches)) {
-            $this->character->state = FIGHTING;
+            // if (not backstabbing or casting)
+            $this->character->state = ATTACKING;
         }
         
         if (preg_match('/(in|into) (the room )?from/', $line, $matches)) {
-            $this->capturedStream->write("l\r\n");
+            if ($this->character->state != LOOKING) {
+                $this->character->state = LOOKING;
+                $this->capturedStream->write("l\r\n");
+            }
         }
 
         if (preg_match('/You gain (\d+) experience\./', $line, $matches))  {
             $this->character->earnedExp += (int) $matches[1];
 
-            // TODO hack, handle multiple monsters-in-room properly
-            $this->capturedStream->write("l\r\n");
+            array_shift($this->character->monstersInRoom);
+
+            $this->character->state = LOOKING;
+
+            // Re-display room, in case something dropped
+
+            if ($this->character->state != LOOKING) {
+                $this->character->state = LOOKING;
+                $this->capturedStream->write("l\r\n");
+            }
         }
 
         $this->triggers($this->moreTriggers, $line);
@@ -124,23 +175,6 @@ class LineHandler {
             $exits = explode(',', $exits);
 
             $this->character->exits = $exits;
-
-            if ($this->character->state == INITIALIZING) {
-            } else if ($this->character->state == RESTING) {
-                $this->character->fightMonsters();
-            } else if ($this->character->state == WALKING) {
-                 $this->character->fightMonsters() || $this->character->takeStep();
-            } else if ($this->character->state == RUNNING) {
-                if (count($this->character->monstersInRoom) > 0) {
-                    $this->character->takeStep();
-                } else {
-                    $this->character->state = RESTING;
-
-                    $this->capturedStream->write("rest\r\n");
-                }
-            }
-
-            $this->character->monstersInRoom = array();
         }
 
         //hex_dump($line, "\n", 48);
