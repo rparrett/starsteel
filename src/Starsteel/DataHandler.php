@@ -59,9 +59,10 @@ class DataHandler {
                             // just pass colors through
 
                             // $this->aline .= "\x1b" . $this->escape;
+                            $this->aline .= "\x1b" . $this->escape;
+                        } else {
+                            $this->aline .= "\x1b" . $this->escape;
                         }
-                        
-                        $this->aline .= "\x1b" . $this->escape;
 
                         $this->escape = "";
                     }
@@ -70,7 +71,7 @@ class DataHandler {
             }
         }
 
-        if (preg_match('/[:?]\s*$/', $this->line, $matches)) {
+        if (preg_match('/[:?]\s*(\(Resting\))?\s*$/', $this->line, $matches)) {
             $this->lineHandler->handle($this->line);
             $this->line = "";
             $this->lineHandler->handleAnsi($this->aline);

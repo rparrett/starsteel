@@ -20,16 +20,20 @@ class Character {
     public $step = 0;
     public $state = INITIALIZING;
     public $attack = "a";
-    public $monsters_in_room = array();
+    public $monstersInRoom = array();
+    public $earnedExp = 0;
+    public $stream;
 
-    function __construct(&$capturedStream) {
+    function __construct() {
         $this->loggedIn = false;
+    }
 
-        $this->capturedStream = $capturedStream;
+    function setStream(&$stream) {
+        $this->stream = $stream;
     }
 
     function takeStep() {
-        $this->capturedStream->write($this->path[$this->step] . "\r\n");
+        $this->stream->write($this->path[$this->step] . "\r\n");
         $this->step++;
 
         if ($this->step >= count($this->path)) $this->step = 0;
@@ -48,10 +52,10 @@ class Character {
     }
 
     function fightMonsters() {
-        if (count($this->monsters_in_room) > 0) {
-            $monster = $this->monsters_in_room[0];
+        if (count($this->monstersInRoom) > 0) {
+            $monster = $this->monstersInRoom[0];
 
-            $this->capturedStream->write($this->attack . " " . $monster . "\r\n");
+            $this->stream->write($this->attack . " " . $monster . "\r\n");
 
             return true;
         }

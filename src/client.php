@@ -29,8 +29,8 @@ use Starsteel\Character;
 use Starsteel\LineHandler;
 use Starsteel\DataHandler;
 
-//$loop = React\EventLoop\Factory::create();
-$loop = new React\EventLoop\StreamSelectLoop();
+$loop = React\EventLoop\Factory::create();
+//$loop = new React\EventLoop\StreamSelectLoop(); // We may need this if we implement logging (see proxy)
 
 $factory = new Factory();
 $dns = $factory->create('8.8.8.8:53', $loop);
@@ -44,13 +44,17 @@ $capturedStream = null;
 $options = array('hexdump' => true, 'line' => false, 'username'=>'', 'password'=>'', 'auto' => true);
 $options = array_replace($options, json_decode(file_get_contents('./config-client.json'), true));
 
+$character = new Character();
+
 $connector->create($options['mud_ip'], $options['mud_port'])
-    ->then(function ($stream) use (&$capturedStream, &$options, $options) {
+    ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character) {
         echo "Connected to {$options['mud_ip']}:{$options['mud_port']}\n";
 
         $capturedStream = $stream;
 
 		$character   = new Character($capturedStream);
+        $character->setStream($capturedStream);
+
         $lineHandler = new LineHandler($capturedStream, $character, $options);
         $dataHandler = new DataHandler($capturedStream, $lineHandler);
 
@@ -66,10 +70,12 @@ $input = new Matt\InputHandler($loop);
 $input->on('ansi', function($data) use (&$capturedStream, &$options) {
 
     // Pass-through ansi sequences from terminal
+    // Not working 100%. For now, just ignore
+
     //$capturedStream->write($data);
 });
 
-$input->on('char', function($char) use (&$capturedStream, &$options, &$loop) {
+$input->on('char', function($char) {
     $ord = ord($char);
 
     if ($ord >= 0x20 && $ord <= 0x7E) {
@@ -77,22 +83,39 @@ $input->on('char', function($char) use (&$capturedStream, &$options, &$loop) {
     }
 });
 
-$input->on('line', function($line) use (&$capturedStream, &$options, &$loop) {
-
-    if ($line == 'auto') {
+$input->on('line', function($line) use (&$capturedStream, &$options, &$character, &$loop) {
+    if ($line == '/auto') {
         $options['auto'] = !$options['auto'];
+
+        return;
     }
 
-    if ($line == 'hexdump') {
+    if ($line == '/hexdump') {
         $options['hexdump'] = !$options['hexdump'];
+
+        return;
     }
 
-    if ($line == 'line') {
+    if ($line == '/line') {
         $options['line'] = !$options['line'];
+
+        return;
     }
 
-    if ($line == 'exit') {
+    if ($line == '/stats') {
+        echo "\n";
+        echo "Stats\n";
+        echo "Earned exp: " . $character->earnedExp . "\n";
+        echo "\n";
+
+        return;
+    }
+
+    if ($line == '/forcequit') {
+        echo "Quitting\n";
         $loop->stop();
+
+        return;
     }
 
     if (null !== $capturedStream) {
