@@ -11,7 +11,6 @@ define('SNEAKING',     5);
 define('MEDITATING',   6);
 define('RELOGGING',    7);
 define('RELOGGED',     8);
-define('LOOKING',      9);
 
 class Character {
     public $exits;
@@ -31,6 +30,7 @@ class Character {
     public $auto = false;
     public $runDistance = 1;
     public $ranDistance = 0;
+    public $roomChanged = false;
 
     function __construct() {
         $this->loggedIn = false;
@@ -39,7 +39,6 @@ class Character {
     function setStream(&$stream) {
         $this->stream = $stream;
     }
-
 
     function fullHealth() {
         return ($this->hp / $this->maxhp) > 0.95;

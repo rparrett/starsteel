@@ -22,8 +22,9 @@ class LineHandler {
     }
 
     function main() {
-        if ($this->character->state == LOOKING) {
-            $this->character->state = NOTHING;
+        if ($this->character->roomChanged) {
+            $this->character->roomChanged = false;
+            $this->capturedStream->write("l\r\n");
             return;
         }
 
@@ -138,10 +139,7 @@ class LineHandler {
         }
         
         if (preg_match('/(in|into) (the room )?from/', $line, $matches)) {
-            if ($this->character->state != LOOKING) {
-                $this->character->state = LOOKING;
-                $this->capturedStream->write("l\r\n");
-            }
+            $this->character->roomChanged = true;
         }
 
         if (preg_match('/You gain (\d+) experience\./', $line, $matches))  {
@@ -149,14 +147,7 @@ class LineHandler {
 
             array_shift($this->character->monstersInRoom);
 
-            $this->character->state = LOOKING;
-
-            // Re-display room, in case something dropped
-
-            if ($this->character->state != LOOKING) {
-                $this->character->state = LOOKING;
-                $this->capturedStream->write("l\r\n");
-            }
+            $this->character->roomChanged = true;
         }
 
         $this->triggers($this->moreTriggers, $line);
@@ -167,6 +158,7 @@ class LineHandler {
             $room = $matches[1];
 
             $this->character->room = $room;
+            $this->character->roomChanged = false;
         }
 
         if (preg_match('/\x1b\[0;32mObvious exits: (.*?)\r\n$/', $line, $matches)) {
