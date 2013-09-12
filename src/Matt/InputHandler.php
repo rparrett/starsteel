@@ -9,6 +9,7 @@ class InputHandler extends EventEmitter
     var $loop;
     var $state;
     var $ansi = '';
+    var $line = '';
 
     var $STATE_COLLECT_ANSI = 0;
     var $STATE_COLLECT_LINE = 1;

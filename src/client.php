@@ -66,7 +66,7 @@ $input = new Matt\InputHandler($loop);
 $input->on('ansi', function($data) use (&$capturedStream, &$options) {
 
     // Pass-through ansi sequences from terminal
-    $capturedStream->write($data);
+    //$capturedStream->write($data);
 });
 
 $input->on('char', function($char) use (&$capturedStream, &$options, &$loop) {
@@ -97,13 +97,13 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$loop) {
 
     if (null !== $capturedStream) {
 
-        for($i=0;$i<strlen($line)-1;$i++)
-            echo "\x08";
-
-        if ($line == "\n" || $line == "\r")
+        if ($line == "\n" || $line == "\r") {
             $capturedStream->write("\r\n");
-        else
+        } else {
+            for($i=0;$i<strlen($line);$i++)
+                echo "\x08";
             $capturedStream->write($line."\r\n");
+        }
     }
 });
 
