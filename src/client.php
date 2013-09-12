@@ -1,9 +1,22 @@
 <?php
 
-register_shutdown_function(function() {
+// Save existing tty configuration
+$term = trim(`stty -g`);
+
+register_shutdown_function(function() use ($term) {
+    echo "Shutting down\n";
+
+    // Reset the tty back to the original configuration
+    // OR you could use: stty sane
+
+    system("stty '" . $term . "'");
+
+    // Fix ansi color spillage
     echo "\x1b[0m";
 });
 
+// Unbuffered stdin
+system("stty -icanon -echo");
 
 // Autoloader
 require_once __DIR__.'/../vendor/autoload.php';
@@ -31,26 +44,41 @@ $capturedStream = null;
 $options = array('hexdump' => true, 'line' => false, 'username'=>'', 'password'=>'', 'auto' => true);
 $options = array_replace($options, json_decode(file_get_contents('./config-client.json'), true));
 
-
 $connector->create($options['mud_ip'], $options['mud_port'])
     ->then(function ($stream) use (&$capturedStream, &$options, $options) {
         echo "Connected to {$options['mud_ip']}:{$options['mud_port']}\n";
 
         $capturedStream = $stream;
-        
-        $character   = new Character($capturedStream);
+
+		$character   = new Character($capturedStream);
         $lineHandler = new LineHandler($capturedStream, $character, $options);
         $dataHandler = new DataHandler($capturedStream, $lineHandler);
 
         $capturedStream->on('data', function($data) use (&$options, &$capturedStream, $dataHandler) {
             $dataHandler->handle($data);
-        });
+		});
     }, function($e) {
         echo "Could not connect to mud.\nError ".$e->getMessage()."\n";
     });
 
 $input = new Matt\InputHandler($loop);
-$input->on('input', function($line) use (&$capturedStream, &$options) {
+
+$input->on('ansi', function($data) use (&$capturedStream, &$options) {
+
+    // Pass-through ansi sequences from terminal
+    $capturedStream->write($data);
+});
+
+$input->on('char', function($char) use (&$capturedStream, &$options, &$loop) {
+    $ord = ord($char);
+
+    if ($ord >= 0x20 && $ord <= 0x7E) {
+        echo $char;
+    }
+});
+
+$input->on('line', function($line) use (&$capturedStream, &$options, &$loop) {
+
     if ($line == 'auto') {
         $options['auto'] = !$options['auto'];
     }
@@ -63,8 +91,15 @@ $input->on('input', function($line) use (&$capturedStream, &$options) {
         $options['line'] = !$options['line'];
     }
 
+    if ($line == 'exit') {
+        $loop->stop();
+    }
+
     if (null !== $capturedStream) {
-        echo "Writing $line\n";
+
+        for($i=0;$i<strlen($line)-1;$i++)
+            echo "\x08";
+
         $capturedStream->write($line."\r\n");
     }
 });

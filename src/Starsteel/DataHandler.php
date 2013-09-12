@@ -44,6 +44,7 @@ class DataHandler {
                     $this->escape .= $chr;
 
                     if ($chr == "[") {
+
                     } elseif ($ord >= 64 && $ord <= 126) {
                         $this->state = STATE_COLLECT_LINE;
 
