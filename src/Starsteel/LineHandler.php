@@ -103,6 +103,9 @@ class LineHandler {
 
         if (preg_match('/You gain (\d+) experience\./', $line, $matches))  {
             $this->character->earnedExp += (int) $matches[1];
+
+            // TODO hack, handle multiple monsters-in-room properly
+            $this->capturedStream->write("l\r\n");
         }
 
         $this->triggers($this->moreTriggers, $line);
