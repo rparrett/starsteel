@@ -59,13 +59,13 @@ class InputHandler extends EventEmitter
                         continue;
                     }
 
-                    $that->line .= $chr;
-
                     if ($chr == "\r" || $chr == "\n") {
                         $that->emit('line', array($that->line));
                         $that->line = '';
                         continue;
                     }
+
+                    $that->line .= $chr;
 
                     $that->emit('char', array($chr));
                 }

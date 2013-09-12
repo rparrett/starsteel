@@ -100,7 +100,10 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$loop) {
         for($i=0;$i<strlen($line)-1;$i++)
             echo "\x08";
 
-        $capturedStream->write($line."\r\n");
+        if ($line == "\n" || $line == "\r")
+            $capturedStream->write("\r\n");
+        else
+            $capturedStream->write($line."\r\n");
     }
 });
 
