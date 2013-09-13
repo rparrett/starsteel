@@ -71,26 +71,12 @@ class DataHandler {
             }
         }
 
-        if (preg_match('/^\[HP=\d+(\/\w+=\d+)?(\]:)?( \(\w+\) )?(\]:)?$/', $this->line, $matches)) {
+        // Prompt detection
+        if (preg_match('/[:?]\s*$/', $this->line, $matches)) {
             $this->lineHandler->handle($this->line);
             $this->line = "";
             $this->lineHandler->handleAnsi($this->aline);
             $this->aline = "";
         }
-
-/*
-        if ($this->line != "") {
-            $this->lineHandler->handle($this->line);
-            
-            $this->line = "";
-        }
-
-        if ($this->aline != "") {
-            $this->lineHandler->handleAnsi($this->aline);
-
-            $this->aline = "";
-        }*/
     }
 }
-
-?>
