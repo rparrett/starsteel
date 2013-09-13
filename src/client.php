@@ -28,6 +28,7 @@ use React\Dns\Resolver\Factory;
 use Starsteel\Character;
 use Starsteel\LineHandler;
 use Starsteel\DataHandler;
+use Starsteel\Util;
 
 $loop = React\EventLoop\Factory::create();
 //$loop = new React\EventLoop\StreamSelectLoop(); // We may need this if we implement logging (see proxy)
@@ -44,7 +45,7 @@ $capturedStream = null;
 $options = array('hexdump' => true, 'line' => false, 'username'=>'', 'password'=>'', 'auto' => true);
 $options = array_replace($options, json_decode(file_get_contents('./config-client.json'), true));
 
-$character = new Character();
+$timeStart = time();
 
 $connector->create($options['mud_ip'], $options['mud_port'])
     ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character) {
@@ -52,8 +53,10 @@ $connector->create($options['mud_ip'], $options['mud_port'])
 
         $capturedStream = $stream;
 
-		$character   = new Character($capturedStream);
+		$character = new Character($capturedStream);
         $character->setStream($capturedStream);
+
+        $character->timeConnect = time();
 
         $lineHandler = new LineHandler($capturedStream, $character, $options);
         $dataHandler = new DataHandler($capturedStream, $lineHandler);
@@ -85,11 +88,11 @@ $input->on('char', function($char) {
 
 $input->on('line', function($line) use (&$capturedStream, &$options, &$character, &$loop) {
     if ($line == '/auto') {
-
-        
         $character->auto = !$character->auto;
 
         if ($character->auto) {
+            $character->timeAuto = time();
+
             echo "\n\n";
             echo "--> Auto on\n";
             echo "\n";
@@ -117,9 +120,17 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
     }
 
     if ($line == '/stats') {
+        $auto   = is_null($character->timeAuto) ? 0 : time() - $character->timeAuto;
+        $online = time() - $character->timeConnect;
+
+        $xphr = $auto <= 0 ? 0 : $character->expEarned / $auto * 60 * 60;
+
         echo "\n\n";
-        echo "Stats\n";
-        echo "Earned exp: " . $character->earnedExp . "\n";
+        printf("--> Online          %10s\n", Util::formatTimeInterval($online));
+        printf("--> Auto            %10s\n", Util::formatTimeInterval($auto));
+        printf("--> Monsters Killed %10s\n", number_format($character->monstersKilled));
+        printf("--> Exp Earned      %10s\n", Util::formatExp($character->expEarned));
+        printf("--> Exp Per Hour    %10s\n", Util::formatExp($xphr));
         echo "\n";
 
         return;
@@ -133,7 +144,6 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
     }
 
     if (null !== $capturedStream) {
-
         if ($line == "\n" || $line == "\r") {
             $capturedStream->write("\r\n");
         } else {

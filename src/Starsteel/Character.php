@@ -11,9 +11,10 @@ define('SNEAKING',     5);
 define('MEDITATING',   6);
 define('RELOGGING',    7);
 define('RELOGGED',     8);
-define('LOOKING',      9);
 
 class Character {
+    public $stream;
+
     public $exits;
     public $room;
     public $loggedIn;
@@ -26,11 +27,15 @@ class Character {
     public $state = NOTHING;
     public $attack = "a";
     public $monstersInRoom = array();
-    public $earnedExp = 0;
-    public $stream;
     public $auto = false;
     public $runDistance = 1;
     public $ranDistance = 0;
+    public $roomChanged = false;
+    
+    public $expEarned = 0;
+    public $monstersKilled = 0;
+    public $timeAuto = null;
+    public $timeConnect = null;
 
     function __construct() {
         $this->loggedIn = false;
@@ -39,7 +44,6 @@ class Character {
     function setStream(&$stream) {
         $this->stream = $stream;
     }
-
 
     function fullHealth() {
         return ($this->hp / $this->maxhp) > 0.95;
