@@ -80,7 +80,7 @@ class LineHandler {
             }
         }
 
-        if (preg_match('/^\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?/', $line, $matches)) {
+        if (preg_match('/^\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?$/', $line, $matches)) {
 
             $this->character->hp = (double) $matches[1];
 
