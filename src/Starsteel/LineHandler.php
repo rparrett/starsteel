@@ -80,9 +80,13 @@ class LineHandler {
             }
         }
 
-        if (preg_match('/^\[HP=(\d+)\/MA=(\d+)\]:( \(Resting\) )?/', $line, $matches)) {
+        if (preg_match('/^\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?/', $line, $matches)) {
+
             $this->character->hp = (double) $matches[1];
-            $this->character->ma = (double) $matches[2];
+
+            if (isset($matches[2])) {
+                $this->character->ma = (double) $matches[2];
+            }
 
             // Mudwalk seems to distinguish between
             // "prompts without more stuff"
