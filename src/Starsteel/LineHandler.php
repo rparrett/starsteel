@@ -160,6 +160,7 @@ class LineHandler {
 
             $this->character->room = $room;
             $this->character->roomChanged = false;
+            $this->character->monstersInRoom = array();
         }
 
         if (preg_match('/\x1b\[0;32mObvious exits: (.*?)\r\n$/', $line, $matches)) {
