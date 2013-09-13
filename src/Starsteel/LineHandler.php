@@ -143,7 +143,8 @@ class LineHandler {
         }
 
         if (preg_match('/You gain (\d+) experience\./', $line, $matches))  {
-            $this->character->earnedExp += (int) $matches[1];
+            $this->character->expEarned += (int) $matches[1];
+            $this->character->monstersKilled += 1;
 
             array_shift($this->character->monstersInRoom);
 
