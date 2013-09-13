@@ -72,7 +72,7 @@ class DataHandler {
         }
 
         // Prompt detection
-        if (preg_match('/[:?]\s*$/', $this->line, $matches)) {
+        if (preg_match('/[:?]\s*(( \((Meditating|Resting)\) )?(\]:)?)?\s*$/', $this->line, $matches)) {
             $this->lineHandler->handle($this->line);
             $this->line = "";
             $this->lineHandler->handleAnsi($this->aline);
