@@ -113,7 +113,7 @@ class Proxy extends EventEmitter {
             if ($line == '')
                 continue;
 
-            $stripped_line = strip_ansi($line);
+            $stripped_line = Util::strip_ansi($line);
 
             if ($stripped_line != '') {
                 $this->log_line('S: '.$stripped_line);

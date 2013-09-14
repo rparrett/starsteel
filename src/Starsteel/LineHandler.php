@@ -175,7 +175,7 @@ class LineHandler {
             $this->character->exits = $exits;
         }
 
-        //hex_dump($line, "\n", 48);
+        //Util::hex_dump($line, "\n", 48);
         echo $line;
     }
 

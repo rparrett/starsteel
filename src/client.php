@@ -6,13 +6,12 @@ $term = trim(`stty -g`);
 register_shutdown_function(function() use ($term) {
     echo "Shutting down\n";
 
-    // Reset the tty back to the original configuration
-    // OR you could use: stty sane
-
-    system("stty '" . $term . "'");
-
     // Fix ansi color spillage
     echo "\x1b[0m";
+
+    // Reset the tty back to the original configuration
+    // OR you could use: stty sane
+    system("stty '" . $term . "'");
 });
 
 // Unbuffered stdin
@@ -29,16 +28,24 @@ use Starsteel\Character;
 use Starsteel\LineHandler;
 use Starsteel\DataHandler;
 use Starsteel\Util;
+use Starsteel\Logger;
 
-$loop = React\EventLoop\Factory::create();
-//$loop = new React\EventLoop\StreamSelectLoop(); // We may need this if we implement logging (see proxy)
+define('LOGGING_ENABLE', true);
+
+if (LOGGING_ENABLE) {
+    // epoll does not play nicely with file streams, so use StreamSelect
+    // https://github.com/reactphp/react/issues/104
+    $loop = new React\EventLoop\StreamSelectLoop();
+    $log = new Logger(Util::filestream_factory('./client.log', $loop));
+} else {
+    $loop = React\EventLoop\Factory::create();
+    $log = new Logger();
+}
 
 $factory = new Factory();
 $dns = $factory->create('8.8.8.8:53', $loop);
 
 $connector = new Connector($loop, $dns);
-
-require_once __DIR__.'/funcs.php';
 
 $capturedStream = null;
 
@@ -50,7 +57,7 @@ $timeStart = time();
 $dataHandler = null;
 
 $connector->create($options['mud_ip'], $options['mud_port'])
-    ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character, &$dataHandler) {
+    ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character, &$dataHandler, &$log) {
         echo "Connected to {$options['mud_ip']}:{$options['mud_port']}\n";
 
         $capturedStream = $stream;
@@ -61,7 +68,7 @@ $connector->create($options['mud_ip'], $options['mud_port'])
         $character->timeConnect = time();
 
         $lineHandler = new LineHandler($capturedStream, $character, $options);
-        $dataHandler = new DataHandler($capturedStream, $lineHandler);
+        $dataHandler = new DataHandler($capturedStream, $lineHandler, &$log);
 
         $capturedStream->on('data', function($data) use (&$options, &$capturedStream, $dataHandler) {
             $dataHandler->handle($data);
@@ -72,8 +79,9 @@ $connector->create($options['mud_ip'], $options['mud_port'])
 
 $input = new Matt\InputHandler($loop);
 
-$input->on('ansi', function($data) use (&$capturedStream, &$options) {
+$input->on('ansi', function($data) use (&$capturedStream, &$options, &$log) {
 
+    $log->log('ANSI Input: '.$data);
     // Pass-through ansi sequences from terminal
     // Not working 100%. For now, just ignore
 
@@ -173,5 +181,18 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
     }
 });
 
-$loop->run();
+declare(ticks = 1);
 
+// Keyboard interrupt handler
+$int_handler = function($sig) use (&$loop) {
+    echo "Signal detected\n";
+    $loop->stop();
+    echo "Exiting\n";
+    exit;
+};
+
+pcntl_signal(SIGINT,  $int_handler);
+pcntl_signal(SIGTERM, $int_handler);
+pcntl_signal(SIGHUP,  $int_handler);
+
+$loop->run();

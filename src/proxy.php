@@ -91,28 +91,6 @@ $http->on('request', $app);
 $api_socket->listen($config['server']['api_port'], $config['server']['api_interface']);
 echo "API listening at http://{$config['server']['api_interface']}:{$config['server']['api_port']}\n";
 
-////////////////////////////////////////////////////////////////
-// Logging
-////////////////////////////////////////////////////////////////
-
-$log_factory = function($filename) use (&$loop) {
-    echo "Logging to $filename\n";
-
-    $fd = fopen($filename, 'a');
-
-    if (false === $fd) {
-        throw new Exception("Couldn't open log!");
-    }
-
-    stream_set_blocking($fd, 0);
-
-    $stream = new React\Stream\Stream($fd, $loop);
-    $stream->on('error', function($err, $s) {
-        throw new Exception("Log died?");
-    });
-
-    return $stream;
-};
 
 ////////////////////////////////////////////////////////////////
 // Handle Incoming Connections
@@ -130,7 +108,7 @@ $socket->on('connection', function ($client_conn) use (&$config, &$connector, &$
 
     echo "Client ".$client_conn->getRemoteAddress()." connected ($next_client_id)\n";
 
-    $log = $log_factory('/tmp/majormud.'.$next_client_id.'.log');
+    $log = Util::filestream_factory('/tmp/majormud.'.$next_client_id.'.log', $loop);
 
     $proxy = new Starsteel\Proxy($next_client_id, $client_conn, $config['server']['mud_ip'], $config['server']['mud_port'], $connector, $log);
     $conns->attach($client_conn, $proxy);
@@ -148,16 +126,11 @@ echo "Listening on {$config['server']['client_interface']}:{$config['server']['c
 // Handle local input
 ////////////////////////////////////////////////////////////////
 
-$input_log = $log_factory('/tmp/input.log');
+$input_log = Starsteel\Util::filestream_factory('/tmp/input.log', $loop);
 
 $input = new Matt\InputHandler($loop);
-$input->on('input', function($line) use (&$input_log) {
+$input->on('line', function($line) use (&$input_log) {
 
-    if (!is_null($input_log)) {
-        $time = date("Y-m-d H:i:s");
-        $input_log->write($time.' '.$line."\n");
-        echo "I: $time $line\n";
-    }
 });
 
 declare(ticks = 1);

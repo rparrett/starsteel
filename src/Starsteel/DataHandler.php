@@ -8,7 +8,7 @@ class DataHandler {
     const STATE_COLLECT_ANSI = 1;
     const STATE_PASSTHRU = 2;
 
-    function __construct(&$capturedStream, &$lineHandler) {
+    function __construct(&$capturedStream, &$lineHandler, &$log) {
         $this->capturedStream = $capturedStream;
         $this->lineHandler = $lineHandler;
 
@@ -16,11 +16,14 @@ class DataHandler {
         $this->aline = "";
         $this->escape = "";
         $this->state = self::STATE_COLLECT_LINE;
+
+        $this->log = $log;
     }
 
     function handle($data) {
         if ($this->state == self::STATE_PASSTHRU) {
             echo $data;
+            $this->log->log('Passthru: '.Util::hex_dump($data, "\n", 32, false));
             return;
         }
 
