@@ -22,7 +22,7 @@ class Character {
     public $maxhp = 1;
     public $ma = 1;
     public $maxma = 1;
-    public $path = array('d', 'u');
+    public $path = array('d', 'wait', 'u');
     public $step = 0;
     public $state = NOTHING;
     public $attack = "a";
@@ -114,23 +114,29 @@ class Character {
         // Picklock instead of bash?
 
         // Issue next command
+        
+        if ($running) {
+            // If we're running and not resting, we are closer to our goal
+            $this->ranDistance++;
 
+            if ($this->path[$this->step] == "wait") {
+                $this->step++;
+                if ($this->step >= count($this->path)) $this->step = 0;
+            }
+        } else {
+            $this->ranDistance = 999;
+
+            if ($this->path[$this->step] == "wait") {
+                return;
+            }
+        }
+        
         $this->stream->write($this->path[$this->step] . "\r\n");
         $this->step++;
 
         if ($this->step >= count($this->path)) $this->step = 0;
 
         $this->state = NOTHING;
-        $this->monstersInRoom = array();
-
-        // For most steps, we can assume that we're not sneaking anymore
-
-        // If we're running and not resting, we are closer to our goal
-        if ($running) { // && cmd != "rest"
-            $this->ranDistance++;
-        } else {
-            $this->ranDistance = 999;
-        }
     }
 
     function healUp() {
