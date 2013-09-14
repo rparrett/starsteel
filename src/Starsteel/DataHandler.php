@@ -2,10 +2,12 @@
 
 namespace Starsteel;
 
-define('STATE_COLLECT_LINE', 0);
-define('STATE_COLLECT_ANSI', 1);
 
 class DataHandler {
+    const STATE_COLLECT_LINE = 0;
+    const STATE_COLLECT_ANSI = 1;
+    const STATE_PASSTHRU = 2;
+
     function __construct(&$capturedStream, &$lineHandler) {
         $this->capturedStream = $capturedStream;
         $this->lineHandler = $lineHandler;
@@ -13,18 +15,23 @@ class DataHandler {
         $this->line  = "";
         $this->aline = "";
         $this->escape = "";
-        $this->state = STATE_COLLECT_LINE;
+        $this->state = self::STATE_COLLECT_LINE;
     }
 
     function handle($data) {
+        if ($this->state == self::STATE_PASSTHRU) {
+            echo $data;
+            return;
+        }
+
         for ($i = 0; $i < strlen($data); $i++) {
             $chr = $data[$i];
             $ord = ord($chr);
 
             switch ($this->state) {
-                CASE STATE_COLLECT_LINE:
+                case self::STATE_COLLECT_LINE:
                     if ($chr == "\x1b") {
-                        $this->state = STATE_COLLECT_ANSI;
+                        $this->state = self::STATE_COLLECT_ANSI;
                     } elseif ($chr == "\n") {
                         $this->line  .= $chr;
                         $this->aline .= $chr;
@@ -40,13 +47,13 @@ class DataHandler {
                     }
 
                     break;
-                CASE STATE_COLLECT_ANSI:
+                case self::STATE_COLLECT_ANSI:
                     $this->escape .= $chr;
 
                     if ($chr == "[") {
 
                     } elseif ($ord >= 64 && $ord <= 126) {
-                        $this->state = STATE_COLLECT_LINE;
+                        $this->state = self::STATE_COLLECT_LINE;
 
                         // execute the collected sequence
 

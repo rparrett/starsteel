@@ -11,12 +11,12 @@ class InputHandler extends EventEmitter
     var $ansi = '';
     var $line = '';
 
-    var $STATE_COLLECT_ANSI = 0;
-    var $STATE_COLLECT_LINE = 1;
+    const STATE_COLLECT_ANSI = 0;
+    const STATE_COLLECT_LINE = 1;
 
     function __construct($loop)
     {
-        $this->state = $this->STATE_COLLECT_LINE;
+        $this->state = self::STATE_COLLECT_LINE;
 
         $this->loop = $loop;
 
@@ -38,7 +38,7 @@ class InputHandler extends EventEmitter
             for($i = 0; $i < $len; $i++) {
                 $chr = $data[$i];
 
-                if ($that->state == $that->STATE_COLLECT_ANSI) {
+                if ($that->state == $that::STATE_COLLECT_ANSI) {
                     $that->ansi .= $chr;
 
                     $ord = ord($chr);
@@ -48,7 +48,7 @@ class InputHandler extends EventEmitter
                     }
 
                     if ($ord >= 64 && $ord <= 126) {
-                        $that->state = $that->STATE_COLLECT_LINE;
+                        $that->state = $that::STATE_COLLECT_LINE;
                         $that->emit('ansi', array($that->ansi));
                         $that->ansi = '';
                         continue;
@@ -56,7 +56,7 @@ class InputHandler extends EventEmitter
                 } else {
                     if ($chr == "\x1b") {
                         $that->ansi .= "\x1b";
-                        $that->state = $that->STATE_COLLECT_ANSI;
+                        $that->state = $that::STATE_COLLECT_ANSI;
                         continue;
                     }
 

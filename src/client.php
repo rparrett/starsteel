@@ -47,8 +47,10 @@ $options = array_replace($options, json_decode(file_get_contents('./config-clien
 
 $timeStart = time();
 
+$dataHandler = null;
+
 $connector->create($options['mud_ip'], $options['mud_port'])
-    ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character) {
+    ->then(function ($stream) use (&$capturedStream, &$options, $options, &$character, &$dataHandler) {
         echo "Connected to {$options['mud_ip']}:{$options['mud_port']}\n";
 
         $capturedStream = $stream;
@@ -86,7 +88,7 @@ $input->on('char', function($char) {
     }
 });
 
-$input->on('line', function($line) use (&$capturedStream, &$options, &$character, &$loop) {
+$input->on('line', function($line) use (&$capturedStream, &$options, &$character, &$loop, &$dataHandler) {
     if ($line == '/auto') {
         $character->auto = !$character->auto;
 
@@ -107,9 +109,26 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
         return;
     }
 
+    if ($line == '/passthru') {
+
+        if ($dataHandler->state == $dataHandler::STATE_PASSTHRU) {
+            $dataHandler->state = $dataHandler::STATE_COLLECT_LINE;
+            echo "Passthru off";
+        } else {
+            $dataHandler->state = $dataHandler::STATE_PASSTHRU;
+            echo "Passthru on";
+        }
+        return;
+    }
+
+
     if ($line == '/hexdump') {
         $options['hexdump'] = !$options['hexdump'];
-
+        if ($options['hexdump']) {
+            echo "Hexdump on";
+        } else {
+            echo "Hexdump off";
+        }
         return;
     }
 
