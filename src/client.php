@@ -36,7 +36,7 @@ if (LOGGING_ENABLE) {
     // epoll does not play nicely with file streams, so use StreamSelect
     // https://github.com/reactphp/react/issues/104
     $loop = new React\EventLoop\StreamSelectLoop();
-    $log = new Logger(Util::filestream_factory('./client.log', $loop));
+    $log = new Logger(Util::filestream_factory(__DIR__.'/../logs/client.log', $loop));
 } else {
     $loop = React\EventLoop\Factory::create();
     $log = new Logger();
