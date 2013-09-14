@@ -12,7 +12,7 @@ class Logger {
     }
 
     function log($text) {
-        if (null === $this->stream)
+        if (null === $this->stream || !$this->stream->isWritable())
             return;
 
         $time = date("Y-m-d H:i:s");

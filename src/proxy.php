@@ -20,8 +20,6 @@ ini_set('error_log', __DIR__.'/../error_log');
 // Init
 ////////////////////////////////////////////////////////////////
 
-require_once __DIR__.'/funcs.php';
-
 // Load server config
 $config = json_decode(file_get_contents('./config.json'), true);
 
@@ -104,11 +102,11 @@ $connector = new Connector($loop, $dns);
 $socket = new React\Socket\Server($loop);
 
 $next_client_id = 0;
-$socket->on('connection', function ($client_conn) use (&$config, &$connector, &$log_factory, &$conns, &$next_client_id ) {
+$socket->on('connection', function ($client_conn) use (&$config, &$connector, &$log_factory, &$conns, &$next_client_id, &$loop ) {
 
     echo "Client ".$client_conn->getRemoteAddress()." connected ($next_client_id)\n";
 
-    $log = Util::filestream_factory('/tmp/majormud.'.$next_client_id.'.log', $loop);
+    $log = new Starsteel\Logger(Starsteel\Util::filestream_factory('/tmp/majormud.'.$next_client_id.'.log', $loop));
 
     $proxy = new Starsteel\Proxy($next_client_id, $client_conn, $config['server']['mud_ip'], $config['server']['mud_port'], $connector, $log);
     $conns->attach($client_conn, $proxy);

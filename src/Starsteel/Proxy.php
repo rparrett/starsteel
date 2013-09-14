@@ -9,8 +9,6 @@ namespace Starsteel;
 use Evenement\EventEmitter;
 use React\SocketClient\Connector;
 
-require_once __DIR__ . '/../funcs.php';
-
 class Proxy extends EventEmitter {
 
     var $conn;
@@ -64,14 +62,7 @@ class Proxy extends EventEmitter {
     }
 
     function log_line($line) {
-
-        $time = date("Y-m-d H:i:s");
-
-        if ($this->log->isWritable()) {
-            $this->log->write($time.' '.$this->addr.' '.$line."\n");
-        } else {
-            echo $time.' '.$line."\n";
-        }
+        $this->log->log($this->addr.' '.$line."\n");
     }
 
     function onServerEnd() {

@@ -68,7 +68,7 @@ $connector->create($options['mud_ip'], $options['mud_port'])
         $character->timeConnect = time();
 
         $lineHandler = new LineHandler($capturedStream, $character, $options);
-        $dataHandler = new DataHandler($capturedStream, $lineHandler, &$log);
+        $dataHandler = new DataHandler($capturedStream, $lineHandler, $log);
 
         $capturedStream->on('data', function($data) use (&$options, &$capturedStream, $dataHandler) {
             $dataHandler->handle($data);
