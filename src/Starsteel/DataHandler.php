@@ -27,7 +27,10 @@ class DataHandler {
             return;
         }
 
-        for ($i = 0; $i < strlen($data); $i++) {
+        $len = strlen($data);
+        $i = 0;
+
+        while ($i < $len) {
             $chr = $data[$i];
             $ord = ord($chr);
 
@@ -65,20 +68,25 @@ class DataHandler {
                             // send the expected reply
 
                             $this->capturedStream->write("\x1b[0,0R");
-                        } elseif (preg_match('/m$/', $this->escape)) {
-                            // just pass colors through
+                        } elseif (preg_match('/2J$/', $this->escape)) {
+                            // for some reason, we need to do this to amke
+                            // the "train stats" screen work properly
 
-                            // $this->aline .= "\x1b" . $this->escape;
-                            $this->aline .= "\x1b" . $this->escape;
-                        } else {
-                            $this->aline .= "\x1b" . $this->escape;
+                            $data = substr($data, 0, $i + 1) . "\x1b[0;0H" . substr($data, $i + 1);
+
+                            $len = $len + 6;
+                            $i = $i + 6;
                         }
+                        
+                        $this->aline .= "\x1b" . $this->escape;
 
                         $this->escape = "";
                     }
                 
                     break;
             }
+
+            $i++;
         }
 
         // Prompt detection
@@ -88,5 +96,7 @@ class DataHandler {
             $this->lineHandler->handleAnsi($this->aline);
             $this->aline = "";
         }
+
+        echo $data;
     }
 }

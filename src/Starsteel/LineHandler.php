@@ -174,9 +174,6 @@ class LineHandler {
 
             $this->character->exits = $exits;
         }
-
-        //Util::hex_dump($line, "\n", 48);
-        echo $line;
     }
 
     function triggers($triggers, $line) {
