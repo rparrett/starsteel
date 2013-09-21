@@ -22,8 +22,6 @@ class Character {
     public $maxhp = 1;
     public $ma = 1;
     public $maxma = 1;
-    public $path = array('d', 'wait', 'u');
-    public $step = 0;
     public $state = NOTHING;
     public $attack = "a";
     public $monstersInRoom = array();
@@ -36,6 +34,9 @@ class Character {
     public $monstersKilled = 0;
     public $timeAuto = null;
     public $timeConnect = null;
+    
+    public $path = null;
+    public $step = 0;
 
     function __construct() {
         $this->loggedIn = false;
@@ -91,7 +92,7 @@ class Character {
         $this->state = ATTACKING;
     }
     
-    function takeStep($running) {
+    function move($running) {
         // Bless self
         //
         // Following another player or
@@ -119,24 +120,64 @@ class Character {
             // If we're running and not resting, we are closer to our goal
             $this->ranDistance++;
 
-            if ($this->path[$this->step] == "wait") {
-                $this->step++;
-                if ($this->step >= count($this->path)) $this->step = 0;
+            if ($this->path->steps[$this->step]->command == "wait") {
+                $this->skipStep();
             }
         } else {
             $this->ranDistance = 999;
 
-            if ($this->path[$this->step] == "wait") {
+            if ($this->path->steps[$this->step]->command == "wait") {
                 return;
             }
         }
-        
-        $this->stream->write($this->path[$this->step] . "\r\n");
-        $this->step++;
 
-        if ($this->step >= count($this->path)) $this->step = 0;
+        $this->takeStep(); 
 
         $this->state = NOTHING;
+    }
+    
+    function skipStep() {
+        $this->step++;
+        
+        // We are on a loop
+        if ($this->step >= count($this->path->steps)) {
+            if ($this->path->isLoop()) {
+                $this->step = 0;
+            } else {
+                // We have arrived at our destination.
+                
+                $this->auto = false;
+            }
+        }
+    }
+
+    function takeStep() {
+        if ($this->path->steps[$this->step]->unique == "") {
+            echo "\nRe-learning path step\n";
+
+            $unique = md5($this->room . implode(',', $this->exits));
+
+            echo "\n\nUnique: {$unique}\n\n";
+
+            $this->path->steps[$this->step]->unique = $unique;
+
+            if ($this->step == 0 && $this->path->startUnique == "") 
+                $this->path->startUnique = $unique;
+        }
+
+        $this->stream->write($this->path->steps[$this->step]->command . "\r\n");
+        $this->step++;
+
+        // We are on a loop
+        if ($this->step >= count($this->path->steps)) {
+            if ($this->path->isLoop()) {
+                $this->step = 0;
+            } else {
+                // We have arrived at our destination
+
+                $this->auto = false;
+            }
+        }
     }
 
     function healUp() {

@@ -4,7 +4,7 @@ namespace Starsteel;
 
 class LineHandler {
 
-    function __construct(&$capturedStream, &$character, $options) {
+    function __construct(&$capturedStream, &$character, $options, &$log) {
         $this->capturedStream = $capturedStream;
         
         $this->loginTriggers = array(
@@ -19,12 +19,16 @@ class LineHandler {
         );
 
         $this->character = $character;
+
+        $this->log = $log;
     }
 
     function main() {
+        $this->log->log('Taking an action');
+
         if ($this->character->roomChanged) {
             $this->character->roomChanged = false;
-            $this->capturedStream->write("l\r\n");
+            $this->capturedStream->write("\r\n");
             return;
         }
 
@@ -38,7 +42,7 @@ class LineHandler {
                 $this->character->fightMonsters();
             } else {
                 if ($this->character->runHealth()) { // || MonsterCnt > MaxMonsters || IsRunPath
-                    $this->character->takeStep(true);
+                    $this->character->move(true);
                 } else {
                     $this->character->fightMonsters();
                 }
@@ -48,7 +52,7 @@ class LineHandler {
             // get a safe distance away?
 
             if ($this->character->auto && $this->character->ranDistance < $this->character->runDistance) { // && !isFollowing
-                $this->character->takeStep(false);
+                $this->character->move(false);
             } else {
                 if (!$this->character->auto) { // || IsFollowing
                     $this->character->healUp();
@@ -61,7 +65,7 @@ class LineHandler {
                         // if (IsBlind || IsConfused || IsParalysed) { 
                         // $this->character->healUp();
                         // } else {
-                        $this->character->takeStep(false);
+                        $this->character->move(false);
                         // }
                     }
                 }
@@ -71,6 +75,8 @@ class LineHandler {
     }
 
     function handle($line) {
+        $this->log->log("handle: " . $line);
+
         if (!$this->character->loggedIn) {
             $triggered = $this->triggers($this->loginTriggers, $line);
             if (isset($triggered["[MAJORMUD]"])) {
@@ -80,7 +86,8 @@ class LineHandler {
             }
         }
 
-        if (preg_match('/^\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?$/', $line, $matches)) {
+        if (preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?$/', $line, $matches)) {
+            $this->log->log("Detected a prompt");
 
             $this->character->hp = (double) $matches[1];
 
@@ -117,7 +124,14 @@ class LineHandler {
                 'kobold thief' => true, 
                 'carrion beast' => true,
                 'lashworm' => true,
-                'filthbug' => true
+                'filthbug' => true,
+                'orc rogue' => true,
+                'orc sentry' => true,
+                'orc lieutenant' => true,
+                'thug' => true,
+                'mercenary' => true,
+                'dark cultist' => true,
+                'half-ogre bodyguard' => true
             );
 
             $attackables = 0;
@@ -162,6 +176,8 @@ class LineHandler {
         if (preg_match('/\x1b\[1;36m(.*?)\r\n$/', $line, $matches)) {
             $room = $matches[1];
 
+            $this->log->log("In new room: {$room}");
+
             $this->character->room = $room;
             $this->character->roomChanged = false;
             $this->character->monstersInRoom = array();
@@ -170,6 +186,9 @@ class LineHandler {
         if (preg_match('/\x1b\[0;32mObvious exits: (.*?)\r\n$/', $line, $matches)) {
             $exits = preg_replace('/.\x08/', '', $matches[1]);
             $exits = str_replace(' ', '', $exits);
+
+            $this->log->log('with exits: ' . $exits);
+
             $exits = explode(',', $exits);
 
             $this->character->exits = $exits;

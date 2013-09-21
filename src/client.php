@@ -29,6 +29,7 @@ use Starsteel\LineHandler;
 use Starsteel\DataHandler;
 use Starsteel\Util;
 use Starsteel\Logger;
+use Starsteel\Path;
 
 define('LOGGING_ENABLE', true);
 
@@ -67,7 +68,7 @@ $connector->create($options['mud_ip'], $options['mud_port'])
 
         $character->timeConnect = time();
 
-        $lineHandler = new LineHandler($capturedStream, $character, $options);
+        $lineHandler = new LineHandler($capturedStream, $character, $options, $log);
         $dataHandler = new DataHandler($capturedStream, $lineHandler, $log);
 
         $capturedStream->on('data', function($data) use (&$options, &$capturedStream, $dataHandler) {
@@ -103,11 +104,27 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
         if ($character->auto) {
             $character->timeAuto = time();
 
+            if ($character->path === null) {
+                $path = new Path();
+                $result = $path->load('/root/.starsteel/paths/slums.path');
+                if ($result === false) {
+                    echo "\nError loading path. Aborting.\n";
+
+                    $character->auto = false;
+
+                    return;
+                }
+
+                $character->path = $path;
+                $character->step = 0;
+            }
+
+
             echo "\n\n";
             echo "--> Auto on\n";
             echo "\n";
 
-            $capturedStream->write("l\r\n");
+            $capturedStream->write("\r\n");
         } else {
             echo "\n\n";
             echo "--> Auto off\n";
