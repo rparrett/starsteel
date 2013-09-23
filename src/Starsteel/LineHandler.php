@@ -86,7 +86,7 @@ class LineHandler {
             }
         }
 
-        if (preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?$/', $line, $matches)) {
+        if (preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:(?:\]: \((?:Meditating|Resting)\) )|(?: \((?:Meditating|Resting)\) \]:)|\]:)$/', $line, $matches)) {
             $this->log->log("Detected a prompt");
 
             $this->character->hp = (double) $matches[1];

@@ -97,7 +97,7 @@ class DataHandler {
             preg_match('/\):\s*$/', $this->line, $matches) ||
             preg_match('/Enter your password:\s*$/', $this->line, $matches) ||
             preg_match('/Otherwise type \"new\":\s*$/', $this->line, $matches) ||
-            preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?$/', $this->line, $matches)) {
+            preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:(?:\]: \((?:Meditating|Resting)\) )|(?: \((?:Meditating|Resting)\) \]:)|\]:)$/', $this->line, $matches)) {
 
             $this->lineHandler->handle($this->line);
             $this->line = "";
