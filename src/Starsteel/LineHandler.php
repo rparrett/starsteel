@@ -95,6 +95,11 @@ class LineHandler {
                 $this->character->ma = (double) $matches[2];
             }
 
+            if ($this->character->hangHealth()) {
+                echo "\n\nHealth low! Hanging up!\n\n";
+                $this->capturedStream->end();
+            }
+
             // Mudwalk seems to distinguish between
             // "prompts without more stuff"
             // and "prompts with stuff"
