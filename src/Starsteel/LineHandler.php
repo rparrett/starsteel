@@ -95,7 +95,7 @@ class LineHandler {
                 $this->character->ma = (double) $matches[2];
             }
 
-            if ($this->character->hangHealth()) {
+            if ($this->character->hangHealth() && $this->character->auto) {
                 echo "\n\nHealth low! Hanging up!\n\n";
                 $this->capturedStream->end();
             }
