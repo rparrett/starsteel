@@ -106,7 +106,7 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
 
             if ($character->path === null) {
                 $path = new Path();
-                $result = $path->load('/root/.starsteel/paths/slums.path');
+                $result = $path->load('../paths/slums.path');
                 if ($result === false) {
                     echo "\nError loading path. Aborting.\n";
 
