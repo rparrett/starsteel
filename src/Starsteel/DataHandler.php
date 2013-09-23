@@ -89,8 +89,16 @@ class DataHandler {
             $i++;
         }
 
+        
         // Prompt detection
-        if (preg_match('/[:?]\s*(( \((Meditating|Resting)\) )?(\]:)?)?\s*$/', $this->line, $matches)) {
+
+        if (preg_match('/\[MAJORMUD\]:\s*$/', $this->line, $matches) ||
+            preg_match('/\(C\)ontinue\?\s*$/', $this->line, $matches) ||
+            preg_match('/\):\s*$/', $this->line, $matches) ||
+            preg_match('/Enter your password:\s*$/', $this->line, $matches) ||
+            preg_match('/Otherwise type \"new\":\s*$/', $this->line, $matches) ||
+            preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:\]:)?(?: \((?:Meditating|Resting)\) )?(?:\]:)?$/', $this->line, $matches)) {
+
             $this->lineHandler->handle($this->line);
             $this->line = "";
             $this->lineHandler->handleAnsi($this->aline);
