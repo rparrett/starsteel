@@ -37,6 +37,7 @@ class Character {
     
     public $path = null;
     public $step = 0;
+    public $lap = 1;
 
     function __construct() {
         $this->loggedIn = false;
@@ -172,6 +173,7 @@ class Character {
         if ($this->step >= count($this->path->steps)) {
             if ($this->path->isLoop()) {
                 $this->step = 0;
+                $this->lap++;
             } else {
                 // We have arrived at our destination
 

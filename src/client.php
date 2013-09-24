@@ -117,6 +117,7 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
 
                 $character->path = $path;
                 $character->step = 0;
+                $character->lap = 1;
             }
 
 
@@ -172,6 +173,7 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
         echo "\n\n";
         printf("--> Online          %10s\n", Util::formatTimeInterval($online));
         printf("--> Auto            %10s\n", Util::formatTimeInterval($auto));
+        printf("--> Lap             %10s\n", $character->lap);
         printf("--> Monsters Killed %10s\n", number_format($character->monstersKilled));
         printf("--> Exp Earned      %10s\n", Util::formatExp($character->expEarned));
         printf("--> Exp Per Hour    %10s\n", Util::formatExp($xphr));
