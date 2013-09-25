@@ -1,0 +1,11 @@
+{
+    "name":"Newhaven Arena",
+    "categories":["Newhaven"],
+    "startUnique":"wtf",
+    "endUnique":"wtf",
+    "steps":[
+        {"command":"d","unique":""},
+        {"command":"wait","unique":""},
+        {"command":"u","unique":""}
+    ]
+}
