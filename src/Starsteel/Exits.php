@@ -33,6 +33,8 @@ class Exits implements \arrayaccess {
     }
 
     public function offsetSet($offset, $value) {
+        if (isset(Exits::$longToShort[$offset])) $offset = Exits::$longToShort[$offset];
+
         $this->container[$offset] = $value;
     }
 

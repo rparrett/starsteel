@@ -116,7 +116,24 @@ class Character {
         // Are we running out of necessity?
         // Display reason why
         
-        // Picklock instead of bash?
+        // TODO Picklock instead of bash?
+
+        if (substr($this->path->steps[$this->step]->command, 0, 4) == "bash") {
+            $dir = substr($this->path->steps[$this->step]->command, 5);
+
+            if ($this->exits[$dir] == Exits::$closed_door) {
+                $this->stream->write("bash "  . $dir . "\r\n");
+
+                // TODO: modify exits when we see "bashed the door open"
+                // so that we don't have to re-examine the room
+
+                $this->stream->write("\r\n");
+                $this->state = NOTHING;
+                return;
+            } else {
+                $this->skipStep();
+            }
+        }
 
         // Issue next command
         
