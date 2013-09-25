@@ -196,8 +196,6 @@ class LineHandler {
             if (preg_match_all('/(closed|open)? ?(door|trap door|gate)? ?(NONE!|north|south|east|west|northeast|northwest|southeast|southwest|up|down|above|below)/', $matches[1], $submatches, PREG_SET_ORDER)) 
             {
                 foreach ($submatches as $submatch) {
-                    //$exits[] = ($submatch[2] ? ($submatch[2] . " ") : "") . $submatch[3];
-
                     if ($submatch[1] == "closed") {
                         $this->character->exits[$submatch[3]] = Exits::$closed_door;
                     } else if ($submatch[2]) {
