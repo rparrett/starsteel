@@ -2,6 +2,8 @@
 
 namespace Starsteel;
 
+use Starsteel\Exits;
+
 define('NOTHING',      0);
 define('BACKSTABBING', 1);
 define('CASTING',      2);
@@ -41,6 +43,7 @@ class Character {
 
     function __construct() {
         $this->loggedIn = false;
+        $this->exits = new Exits();
     }
 
     function setStream(&$stream) {
@@ -156,7 +159,7 @@ class Character {
         if ($this->path->steps[$this->step]->unique == "") {
             echo "\nRe-learning path step\n";
 
-            $unique = md5($this->room . implode(',', $this->exits));
+            $unique = md5($this->room . $this->exits->unique());
 
             echo "\n\nUnique: {$unique}\n\n";
 

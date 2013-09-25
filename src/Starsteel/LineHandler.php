@@ -189,14 +189,26 @@ class LineHandler {
         }
 
         if (preg_match('/\x1b\[0;32mObvious exits: (.*?)\r\n$/', $line, $matches)) {
-            $exits = preg_replace('/.\x08/', '', $matches[1]);
-            $exits = str_replace(' ', '', $exits);
+            $matches[1] = preg_replace('/.\x08/', '', $matches[1]);
+            
+            $this->character->exits->clear();
 
-            $this->log->log('with exits: ' . $exits);
+            if (preg_match_all('/(closed|open)? ?(door|trap door|gate)? ?(NONE!|north|south|east|west|northeast|northwest|southeast|southwest|up|down|above|below)/', $matches[1], $submatches, PREG_SET_ORDER)) 
+            {
+                foreach ($submatches as $submatch) {
+                    $exits[] = ($submatch[2] ? ($submatch[2] . " ") : "") . $submatch[3];
 
-            $exits = explode(',', $exits);
+                    if ($submatch[3] == "closed") {
+                        $this->character->exits[$submatch[3]] = Exits::$closed_door;
+                    } else if ($submatch[2]) {
+                        $this->character->exits[$submatch[3]] = Exits::$open_door;
+                    } else {
+                        $this->character->exits[$submatch[3]] = Exits::$normal;
+                    }
+                }
 
-            $this->character->exits = $exits;
+                $this->log->log($this->character->exits->unique());
+            }
         }
     }
 
