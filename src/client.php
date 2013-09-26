@@ -71,9 +71,11 @@ $connector->create($options['mud_ip'], $options['mud_port'])
         $lineHandler = new LineHandler($capturedStream, $character, $options, $log);
         $dataHandler = new DataHandler($capturedStream, $lineHandler, $log);
 
-        $capturedStream->on('data', function($data) use (&$options, &$capturedStream, $dataHandler) {
-            $dataHandler->handle($data);
-		});
+        $capturedStream->on('data', array($dataHandler, 'handle'));
+
+        $capturedStream->on('close', function() {
+            echo "\nConnection closed.\n";
+        });
     }, function($e) {
         echo "Could not connect to mud.\nError ".$e->getMessage()."\n";
     });
