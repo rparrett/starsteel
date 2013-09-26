@@ -136,7 +136,14 @@ class LineHandler {
                 'thug' => true,
                 'mercenary' => true,
                 'dark cultist' => true,
-                'half-ogre bodyguard' => true
+                'half-ogre bodyguard' => true,
+                'skeleton' => true,
+                'zombie' => true,
+                'giant bat' => true,
+                'shade' => true,
+                'ghoul' => true,
+                'wight' => true,
+                'mummy' => true
             );
 
             $attackables = 0;

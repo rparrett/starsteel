@@ -134,6 +134,23 @@ class Character {
                 $this->skipStep();
             }
         }
+        
+        if (substr($this->path->steps[$this->step]->command, 0, 6) == "search") {
+            $dir = substr($this->path->steps[$this->step]->command, 7);
+
+            if ($this->exits[$dir] !== Exits::$normal) {
+                $this->stream->write("search "  . $dir . "\r\n");
+
+                // TODO: modify exits when we see "found an exit"
+                // so that we don't have to re-examine the room
+
+                $this->stream->write("\r\n");
+                $this->state = NOTHING;
+                return;
+            } else {
+                $this->skipStep();
+            }
+        }
 
         // Issue next command
         

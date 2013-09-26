@@ -120,7 +120,6 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
                 $character->lap = 1;
             }
 
-
             echo "\n\n";
             echo "--> Auto on\n";
             echo "\n";
@@ -131,6 +130,28 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
             echo "--> Auto off\n";
             echo "\n";
         }
+
+        return;
+    }
+
+    if (substr($line, 0, 9) == '/loadpath') {
+        $filename = "../paths/" . substr($line, 10) . ".path";
+
+        $path = new Path();
+        $result = $path->load($filename);
+        if ($result === false) {
+            echo "\nError loading path. Aborting.\n";
+
+            $character->auto = false;
+
+            return;
+        } else {
+            echo "\nPath loaded\n";
+        }
+
+        $character->path = $path;
+        $character->step = 0;
+        $character->lap = 1;
 
         return;
     }
@@ -146,7 +167,6 @@ $input->on('line', function($line) use (&$capturedStream, &$options, &$character
         }
         return;
     }
-
 
     if ($line == '/hexdump') {
         $options['hexdump'] = !$options['hexdump'];

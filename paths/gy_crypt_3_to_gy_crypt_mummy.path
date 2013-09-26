@@ -1,0 +1,21 @@
+{
+    "name":"Graveyard Crypt Level 3 to Graveyard Crypt Mummy",
+    "categories":["graveyard"],
+    "startUnique":"",
+    "endUnique":"",
+    "steps":[
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"e","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"w","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"n","unique":""}
+    ]
+}

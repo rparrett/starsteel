@@ -1,0 +1,15 @@
+{
+    "name":"Silvermere Town Square to Graveyard Bridge",
+    "categories":["graveyard"],
+    "startUnique":"",
+    "endUnique":"",
+    "steps":[
+        {"command":"ne","unique":""},
+        {"command":"e","unique":""},
+        {"command":"e","unique":""},
+        {"command":"n","unique":""},
+        {"command":"bash n","unique":""},
+        {"command":"n","unique":""},
+        {"command":"d","unique":""}
+    ]
+}

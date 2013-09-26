@@ -1,0 +1,23 @@
+{
+    "name":"Graveyard Crypt Level 2 to Graveyard Crypt Level 3",
+    "categories":["graveyard"],
+    "startUnique":"",
+    "endUnique":"",
+    "steps":[
+        {"command":"search s","unique":""},
+        {"command":"s","unique":""},
+        {"command":"se","unique":""},
+        {"command":"sw","unique":""},
+        {"command":"se","unique":""},
+        {"command":"se","unique":""},
+        {"command":"se","unique":""},
+        {"command":"sw","unique":""},
+        {"command":"sw","unique":""},
+        {"command":"sw","unique":""},
+        {"command":"push eye","unique":""},
+        {"command":"s","unique":""},
+        {"command":"s","unique":""},
+        {"command":"s","unique":""},
+        {"command":"d","unique":""}
+    ]
+}
