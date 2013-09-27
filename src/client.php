@@ -28,13 +28,27 @@ use Starsteel\Util;
 use Starsteel\Logger;
 use Starsteel\Client;
 
-define('LOGGING_ENABLE', true);
+$opts = getopt("l::", array('log::'));
+
+$logfile = null;
+if (isset($opts['l']))
+    $logfile = $opts['l'];
+elseif (isset($opts['log']))
+    $logfile = $opts['log'];
+
+if (null !== $logfile && !$logfile) {
+    $logfile = __DIR__.'/../logs/client.log';
+}
+
+define('LOGGING_ENABLE', null !== $logfile);
 
 if (LOGGING_ENABLE) {
+    echo "Logging enabled: ".$logfile."\n";
+
     // epoll does not play nicely with file streams, so use StreamSelect
     // https://github.com/reactphp/react/issues/104
     $loop = new React\EventLoop\StreamSelectLoop();
-    $log = new Logger(Util::filestream_factory(__DIR__.'/../logs/client.log', $loop));
+    $log = new Logger(Util::filestream_factory($logfile, $loop));
 } else {
     $loop = React\EventLoop\Factory::create();
     $log = new Logger();
@@ -42,6 +56,7 @@ if (LOGGING_ENABLE) {
 
 $options = array('hexdump' => true, 'line' => false, 'username'=>'', 'password'=>'', 'auto' => true);
 $options = array_replace($options, json_decode(file_get_contents('./config-client.json'), true));
+print_r($options);
 
 $factory = new Factory();
 $dns = $factory->create('8.8.8.8:53', $loop);

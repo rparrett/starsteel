@@ -19,23 +19,23 @@ class Client {
         $this->connector = $connector;
         $this->options = $options;
         $this->log = $log;
-        
+
         $input = new InputHandler($loop);
         $input->on('ansi', array($this, 'onAnsiInput'));
         $input->on('char', array($this, 'onCharInput'));
         $input->on('line', array($this, 'onLineInput'));
-        
-        $this->character = new Character();
+
+        $this->character = new Character($log);
     }
 
     function connect() {
         return $this->connector->create(
-            $this->options['host'], 
+            $this->options['host'],
             $this->options['port']
         )->then(
-            array($this, 'onConnect'),
-            array($this, 'onConnectFail')
-        );
+                array($this, 'onConnect'),
+                array($this, 'onConnectFail')
+            );
     }
 
     function onConnect($stream) {
@@ -61,7 +61,7 @@ class Client {
         echo "\nConnection closed.\n";
 
         $this->character->loggedIn = false;
-        $this->character->state = 0;
+        $this->character->setState(Character::$STATE_NOTHING);
 
         $this->connect();
     }
@@ -77,7 +77,7 @@ class Client {
 
         //$this->stream->write($data);
     }
-   
+
     public function onCharInput($char) {
         $ord = ord($char);
 
@@ -145,16 +145,16 @@ class Client {
             return;
         }
 
-/*        if ($line == '/passthru') {
-            if ($dataHandler->state == $dataHandler::STATE_PASSTHRU) {
-                $dataHandler->state = $dataHandler::STATE_COLLECT_LINE;
-                echo "Passthru off";
-            } else {
-                $dataHandler->state = $dataHandler::STATE_PASSTHRU;
-                echo "Passthru on";
-            }
-            return;
-}*/
+        /*        if ($line == '/passthru') {
+                    if ($dataHandler->state == $dataHandler::STATE_PASSTHRU) {
+                        $dataHandler->state = $dataHandler::STATE_COLLECT_LINE;
+                        echo "Passthru off";
+                    } else {
+                        $dataHandler->state = $dataHandler::STATE_PASSTHRU;
+                        echo "Passthru on";
+                    }
+                    return;
+        }*/
 
         if ($line == '/hexdump') {
             $this->options['hexdump'] = !$this->options['hexdump'];
