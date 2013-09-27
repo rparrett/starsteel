@@ -27,6 +27,7 @@ class LineHandler {
         $this->log->log('Taking an action');
 
         if ($this->character->roomChanged) {
+            $this->log->log("Resetting roomChanged");
             $this->character->roomChanged = false;
             $this->capturedStream->write("\r\n");
             return;
@@ -58,7 +59,7 @@ class LineHandler {
                     $this->character->healUp();
                 } else {
                     if ($this->character->restHealth() || 
-                        (!$this->character->fullHealth() && $this->character->state == RESTING))
+                        (!$this->character->fullHealth() && $this->character->getState() == Character::$STATE_RESTING))
                     {
                         $this->character->healUp();
                     } else {
@@ -75,7 +76,7 @@ class LineHandler {
     }
 
     function handle($line) {
-        $this->log->log("handle: " . $line);
+        $this->log->log("handle: " . rtrim($line));
 
         if (!$this->character->loggedIn) {
             $triggered = $this->triggers($this->loginTriggers, $line);
@@ -160,12 +161,12 @@ class LineHandler {
         }
         
         if (preg_match('/Combat Off/', $line, $matches)) {
-            $this->character->state = NOTHING;
+            $this->character->setState(Character::$STATE_NOTHING);
         } 
         
         if (preg_match('/\*Combat Engaged\*/', $line, $matches)) {
             // if (not backstabbing or casting)
-            $this->character->state = ATTACKING;
+            $this->character->setState(Character::$STATE_ATTACKING);
         }
         
         if (preg_match('/(in|into) (the room )?from/', $line, $matches)) {
