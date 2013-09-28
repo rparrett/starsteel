@@ -26,6 +26,11 @@ class LineHandler {
     function main() {
         $this->log->log('Taking an action');
 
+        if ($this->character->maxhp == 1) {
+            $this->capturedStream->write("st\r\n");
+            return;
+        }
+
         if ($this->character->roomChanged) {
             $this->log->log("Resetting roomChanged");
             $this->character->roomChanged = false;
@@ -82,9 +87,9 @@ class LineHandler {
             $triggered = $this->triggers($this->loginTriggers, $line);
             if (isset($triggered["[MAJORMUD]"])) {
                 $this->character->loggedIn = true;
-
-                $this->capturedStream->write("st\r\n");
             }
+
+            return;
         }
 
         if (preg_match('/.*?\[HP=(\d+)(?:\/(?:MA|KAI)=(\d+))?(?:(?:\]: \((?:Meditating|Resting)\) )|(?: \((?:Meditating|Resting)\) \]:)|\]:)$/', $line, $matches)) {
