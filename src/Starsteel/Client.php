@@ -20,10 +20,10 @@ class Client {
         $this->options = $options;
         $this->log = $log;
 
-        $input = new InputHandler($loop);
-        $input->on('ansi', array($this, 'onAnsiInput'));
-        $input->on('char', array($this, 'onCharInput'));
-        $input->on('line', array($this, 'onLineInput'));
+        $this->input = new InputHandler($loop);
+        $this->input->on('ansi', array($this, 'onAnsiInput'));
+        $this->input->on('char', array($this, 'onCharInput'));
+        $this->input->on('line', array($this, 'onLineInput'));
 
         $this->character = new Character($log);
     }

@@ -9,7 +9,7 @@ class LineHandler {
         
         $this->loginTriggers = array(
             "Otherwise type \"new\":"  => $options['username'] . "\r\n",
-            "Enter your password"      => $options['password'] . "\r\n",
+            "Enter your password:"     => $options['password'] . "\r\n",
             "selection"                => "/go majormud\r\n",
             "[MAJORMUD]"               => "e\r\n"
         );
