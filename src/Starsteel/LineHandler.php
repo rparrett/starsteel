@@ -187,6 +187,14 @@ class LineHandler {
             $this->character->roomChanged = true;
         }
 
+        if (preg_match('/Please finish up and log off/', $line, $matches)) {
+            $this->character->cleanupTime = true;
+        }
+
+        // You will exit after a period of silent meditation.
+        // Your character has been saved. If you have any comments or suggestions, please
+        // Your meditation has been interrupted - you may not exit now!
+
         $this->triggers($this->moreTriggers, $line);
     }
 

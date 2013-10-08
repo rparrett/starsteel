@@ -27,6 +27,9 @@ class Character {
     public $timeAuto = null;
     public $timeConnect = null;
 
+    public $reconnectDelay = 300;
+    public $cleanupTime = false;
+
     public $path = null;
     public $step = 0;
     public $lap = 1;
@@ -116,7 +119,12 @@ class Character {
         // If (IsFollowing)
 
         if (!$this->auto) // || IsWaiting
-        return;
+            return;
+
+        if ($this->cleanupTime) {
+            $this->stream->write("quit\r\n");
+            return;
+        }
 
         // If not running, can we sneak?
 
