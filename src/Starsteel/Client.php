@@ -58,13 +58,18 @@ class Client {
     }
 
     function onConnectionClose() {
-        echo "\nConnection closed. Waiting {$this->character->reconnectDelay} seconds to reconnect.\n";
+        echo "\nConnection closed.\n";
 
         $this->character->loggedIn = false;
         $this->character->cleanupTime = false;
         $this->character->setState(Character::$STATE_NOTHING);
 
-        sleep($this->character->reconnectDelay);
+        for($i = 0; $i < $this->character->reconnectDelay; $i++) {
+            if ($i % 30 == 0) {
+                echo "Waiting " . ($this->character->reconnectDelay - $i) . " seconds to reconnect.\n";
+            }
+            sleep(1);
+        }
 
         $this->connect();
     }

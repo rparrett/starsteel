@@ -128,7 +128,7 @@ class Character {
             return;
         }
 
-        if ($this->cleanupTime) {
+        if ($this->cleanupTime && !$running) {
             $this->stream->write("quit\r\n");
             return;
         }
