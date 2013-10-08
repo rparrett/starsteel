@@ -191,6 +191,16 @@ class LineHandler {
             $this->character->cleanupTime = true;
         }
 
+        if (preg_match('/You notice (.*?) here./', $line, $matches)) {
+            $items = explode(',', $matches[1]);
+            
+            foreach ($items as $item) {
+                if (preg_match('/(\d+) (silver noble|gold crown)s?/', $item, $m)) {
+                    $this->character->itemsInRoom[] = $m[1] . " " . $m[2];
+                }
+            }
+        }
+
         // You will exit after a period of silent meditation.
         // Your character has been saved. If you have any comments or suggestions, please
         // Your meditation has been interrupted - you may not exit now!
@@ -207,6 +217,7 @@ class LineHandler {
             $this->character->room = $room;
             $this->character->roomChanged = false;
             $this->character->monstersInRoom = array();
+            $this->character->itemsInRoom = array();
         }
 
         if (preg_match('/\x1b\[0;32mObvious exits: (.*?)\r\n$/', $line, $matches)) {

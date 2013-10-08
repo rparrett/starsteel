@@ -17,6 +17,7 @@ class Character {
     private $state = "nothing";
     public $attack = "a";
     public $monstersInRoom = array();
+    public $itemsInRoom = array();
     public $auto = false;
     public $runDistance = 1;
     public $ranDistance = 0;
@@ -120,6 +121,12 @@ class Character {
 
         if (!$this->auto) // || IsWaiting
             return;
+
+        while (count($this->itemsInRoom) > 0) {
+            $item = array_pop($this->itemsInRoom);
+            $this->stream->write("get " . $item . "\r\n");
+            return;
+        }
 
         if ($this->cleanupTime) {
             $this->stream->write("quit\r\n");
