@@ -10,4 +10,8 @@ class PathStep {
         $this->unique = $unique;
         $this->command = $command;
     }
+
+    function toArray() {
+        return array('unique' => $this->unique, 'command' => $this->command);
+    }
 }

@@ -36,10 +36,24 @@ class Path {
         foreach ($contents->steps as $step) {
             $this->steps[] = new PathStep($step->unique, $step->command);
         }
+
+        return true;
     }
 
     function save() {
+        $contents = array(
+            'name' => $this->name,
+            'startUnique' => $this->startUnique,
+            'endUnique' => $this->endUnique,
+            'categories' => $this->categories,
+            'steps' => array()
+        );
 
+        foreach ($this->steps as $step) {
+            $contents['steps'][] = $step->toArray();
+        }
+
+        file_put_contents($this->filename, json_encode($contents));
     }
 
     function isLoop() {

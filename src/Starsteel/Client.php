@@ -11,6 +11,7 @@ use Matt\InputHandler;
 class Client {
     public $character;
     public $stream;
+    public $paths;
 
     public $input;
 
@@ -26,6 +27,10 @@ class Client {
         $this->input->on('line', array($this, 'onLineInput'));
 
         $this->character = new Character($log, $options);
+        
+        $this->paths = new Paths();
+
+        $this->pathsMenu = array();
     }
 
     function connect() {
@@ -96,26 +101,15 @@ class Client {
 
     public function onLineInput($line) {
         if ($line == '/auto') {
+            if ($this->character->path === null) {
+                echo "\nNo path loaded.\n";
+                return;
+            }
+
             $this->character->auto = !$this->character->auto;
 
             if ($this->character->auto) {
                 $this->character->timeAuto = time();
-
-                if ($this->character->path === null) {
-                    $path = new Path();
-                    $result = $path->load('../paths/slums.path');
-                    if ($result === false) {
-                        echo "\nError loading path. Aborting.\n";
-
-                        $this->character->auto = false;
-
-                        return;
-                    }
-
-                    $this->character->path = $path;
-                    $this->character->step = 0;
-                    $this->character->lap = 1;
-                }
 
                 echo "\n\n";
                 echo "--> Auto on\n";
@@ -131,24 +125,46 @@ class Client {
             return;
         }
 
-        if (substr($line, 0, 9) == '/loadpath') {
-            $filename = "../paths/" . substr($line, 10) . ".path";
+        if ($line == '/savepath') {
+            $this->character->path->save();
+            return;
+        }
 
-            $path = new Path();
-            $result = $path->load($filename);
-            if ($result === false) {
-                echo "\nError loading path. Aborting.\n";
+        if (substr($line, 0, 6) == '/paths') {
+            if (count($this->pathsMenu) == 0) {
+                $unique = md5($this->character->room . $this->character->exits->unique());
 
-                $this->character->auto = false;
-
-                return;
-            } else {
-                echo "\nPath loaded\n";
+                $this->pathsMenu = $this->paths->getStartUnique($unique);
             }
 
-            $this->character->path = $path;
-            $this->character->step = 0;
-            $this->character->lap = 1;
+            $selection = (int) substr($line, 7);
+            if ($selection) {
+                $selection -= 1;
+
+                if (!isset($this->pathsMenu[$selection])) {
+                    echo "\n\nInvalid Selection\n\n";
+                    return;
+                }
+
+                echo "\n\nSelected path: " . $this->pathsMenu[$selection]->name;
+
+                $this->character->path = $this->pathsMenu[$selection];
+                $this->character->step = 0;
+                $this->character->lap = 1;
+            } else {
+                if (count($this->pathsMenu) == 0) {
+                    echo "\n\nNo paths found\n\n";
+                    return;
+                }
+                
+                echo "\n\nSelect a path:\n";
+
+                for ($i = 0; $i < count($this->pathsMenu); $i++) {
+                    echo "-> /paths " . ($i + 1) . " -> " . $this->pathsMenu[$i]->name . "\n";
+                }
+
+                echo "\n";
+            }
 
             return;
         }
