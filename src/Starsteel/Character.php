@@ -16,6 +16,7 @@ class Character {
     public $maxma = 1;
     private $state = "nothing";
     public $attack = "a";
+    public $lastAttackCmd = "";
     public $monstersInRoom = array();
     public $itemsInRoom = array();
     public $auto = false;
@@ -96,7 +97,9 @@ class Character {
 
         $monster = $this->monstersInRoom[0];
 
-        $this->stream->write($this->attack . " " . $monster . "\r\n");
+        $this->lastAttackCmd = $this->attack . " " . $monster;
+
+        $this->stream->write($this->lastAttackCmd . "\r\n");
 
         $this->setState(self::$STATE_ATTACKING);
     }

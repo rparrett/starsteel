@@ -180,6 +180,13 @@ class LineHandler {
             $this->character->roomChanged = true;
         }
 
+        if ($line == "You say \"" . $this->character->lastAttackCmd . "\"") {
+            $this->log->log('Whiffed, resetting state and re-checking room');
+
+            $this->character->roomChanged = true;
+            $this->character->setState(Character::$STATE_NOTHING);
+        }
+
         if (preg_match('/You gain (\d+) experience\./', $line, $matches))  {
             $this->character->expEarned += (int) $matches[1];
             $this->character->monstersKilled += 1;
