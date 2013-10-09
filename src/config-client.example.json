@@ -2,5 +2,10 @@
 	"username":"user",
 	"password":"pass",
 	"host": "mud.mud.com",
-	"port": 23
+	"port": 23,
+    "lootCopper": false,
+    "lootSilver": false,
+    "lootGold": true,
+    "lootPlatinum": true,
+    "lootRunic": true
 }

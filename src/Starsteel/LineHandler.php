@@ -20,6 +20,8 @@ class LineHandler {
 
         $this->character = $character;
 
+        $this->options = $options;
+
         $this->log = $log;
     }
 
@@ -195,7 +197,13 @@ class LineHandler {
             $items = explode(',', $matches[1]);
             
             foreach ($items as $item) {
-                if (preg_match('/(\d+) (silver noble|gold crown)s?/', $item, $m)) {
+                if (preg_match('/(\d+) (copper farthing|silver noble|gold crown|platinum piece|runic coin)s?/', $item, $m)) {
+                    if ($m[2] == 'copper farthing' && !$this->options['lootCopper']) break;
+                    if ($m[2] == 'silver noble'    && !$this->options['lootSilver']) break;
+                    if ($m[2] == 'gold crown'      && !$this->options['lootGold']) break;
+                    if ($m[2] == 'platinum piece'  && !$this->options['lootPlatinum']) break;
+                    if ($m[2] == 'runic coin'      && !$this->options['lootRunic']) break;
+
                     $this->character->itemsInRoom[] = $m[1] . " " . $m[2];
                 }
             }
