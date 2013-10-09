@@ -1,11 +1,20 @@
 {
-	"username":"user",
-	"password":"pass",
 	"host": "mud.mud.com",
 	"port": 23,
+	"username":"user",
+	"password":"pass",
+    "reconnectDelay": 300,
+
     "lootCopper": false,
     "lootSilver": false,
     "lootGold": true,
     "lootPlatinum": true,
-    "lootRunic": true
+    "lootRunic": true,
+
+    "runDistance": 4,
+
+    "fullHealth": 0.95,
+    "restHealth": 0.80,
+    "runHealth": 0.50,
+    "hangHealth": 0.20
 }

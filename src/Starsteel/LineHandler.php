@@ -59,7 +59,7 @@ class LineHandler {
             // No monsters, need to run further to
             // get a safe distance away?
 
-            if ($this->character->auto && $this->character->ranDistance < $this->character->runDistance) { // && !isFollowing
+            if ($this->character->auto && $this->character->ranDistance < $this->options['runDistance']) { // && !isFollowing
                 $this->character->move(false);
             } else {
                 if (!$this->character->auto) { // || IsFollowing

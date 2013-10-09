@@ -19,7 +19,6 @@ class Character {
     public $monstersInRoom = array();
     public $itemsInRoom = array();
     public $auto = false;
-    public $runDistance = 1;
     public $ranDistance = 0;
     public $roomChanged = false;
 
@@ -45,10 +44,11 @@ class Character {
     public static $STATE_RELOGGING      = 'relogging';
     public static $STATE_RELOGGED       = 'relogged';
 
-    function __construct(&$log) {
+    function __construct(&$log, $options) {
         $this->loggedIn = false;
         $this->exits = new Exits();
         $this->log = $log;
+        $this->options = $options;
     }
 
     function setStream(&$stream) {
@@ -56,19 +56,19 @@ class Character {
     }
 
     function fullHealth() {
-        return ($this->hp / $this->maxhp) > 0.95;
+        return ($this->hp / $this->maxhp) > $this->options['fullHealth'];
     }
 
     function restHealth() {
-        return ($this->hp / $this->maxhp) < 0.80;
+        return ($this->hp / $this->maxhp) < $this->options['restHealth'];
     }
 
     function runHealth() {
-        return ($this->hp / $this->maxhp) < 0.50;
+        return ($this->hp / $this->maxhp) < $this->options['runHealth'];
     }
 
     function hangHealth() {
-        return ($this->hp / $this->maxhp) < 0.20;
+        return ($this->hp / $this->maxhp) < $this->options['hangHealth'];
     }
 
     function fightMonsters() {

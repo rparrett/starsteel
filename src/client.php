@@ -54,9 +54,28 @@ if (LOGGING_ENABLE) {
     $log = new Logger();
 }
 
-$options = array('hexdump' => true, 'line' => false, 'username'=>'', 'password'=>'', 'auto' => true);
+$options = array(
+	"host" => "mud.mud.com",
+	"port" => 23,
+	"username" => "user",
+	"password" => "pass",
+    "reconnectDelay" => 300,
+
+    "lootCopper" => false,
+    "lootSilver" => false,
+    "lootGold" => true,
+    "lootPlatinum" => true,
+    "lootRunic" => true,
+
+    "runDistance" => 4,
+
+    "fullHealth" => 0.95,
+    "restHealth" => 0.80,
+    "runHealth" => 0.50,
+    "hangHealth" => 0.20
+);
+
 $options = array_replace($options, json_decode(file_get_contents('./config-client.json'), true));
-print_r($options);
 
 $factory = new Factory();
 $dns = $factory->create('8.8.8.8:53', $loop);

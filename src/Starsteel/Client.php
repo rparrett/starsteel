@@ -25,7 +25,7 @@ class Client {
         $this->input->on('char', array($this, 'onCharInput'));
         $this->input->on('line', array($this, 'onLineInput'));
 
-        $this->character = new Character($log);
+        $this->character = new Character($log, $options);
     }
 
     function connect() {
@@ -64,9 +64,9 @@ class Client {
         $this->character->cleanupTime = false;
         $this->character->setState(Character::$STATE_NOTHING);
 
-        for($i = 0; $i < $this->character->reconnectDelay; $i++) {
+        for($i = 0; $i < $this->options['reconnectDelay']; $i++) {
             if ($i % 30 == 0) {
-                echo "Waiting " . ($this->character->reconnectDelay - $i) . " seconds to reconnect.\n";
+                echo "Waiting " . ($this->options['reconnectDelay'] - $i) . " seconds to reconnect.\n";
             }
             sleep(1);
         }
@@ -163,22 +163,6 @@ class Client {
                     }
                     return;
         }*/
-
-        if ($line == '/hexdump') {
-            $this->options['hexdump'] = !$this->options['hexdump'];
-            if ($this->options['hexdump']) {
-                echo "Hexdump on";
-            } else {
-                echo "Hexdump off";
-            }
-            return;
-        }
-
-        if ($line == '/line') {
-            $this->options['line'] = !$this->options['line'];
-
-            return;
-        }
 
         if ($line == '/stats') {
             $auto   = is_null($this->character->timeAuto) ? 0 : time() - $this->character->timeAuto;
