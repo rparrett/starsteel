@@ -180,7 +180,7 @@ class LineHandler {
             $this->character->roomChanged = true;
         }
 
-        if ($line == "You say \"" . $this->character->lastAttackCmd . "\"") {
+        if ($line == "You say \"" . $this->character->lastAttackCmd . "\"\r\n") {
             $this->log->log('Whiffed, resetting state and re-checking room');
 
             $this->character->roomChanged = true;
