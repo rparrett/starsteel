@@ -99,6 +99,21 @@ class Client {
         }
     }
 
+    public function showPathsMenu() {
+        if (count($this->pathsMenu) == 0) {
+            echo "\n\nNo paths found\n\n";
+            return;
+        }
+        
+        echo "\n\nSelect a path:\n";
+
+        for ($i = 0; $i < count($this->pathsMenu); $i++) {
+            echo "-> /path " . ($i + 1) . " -> " . $this->pathsMenu[$i]->name . "\n";
+        }
+
+        echo "\n";
+    }
+
     public function onLineInput($line) {
         if ($line == '/auto') {
             if ($this->character->path === null) {
@@ -131,40 +146,36 @@ class Client {
         }
 
         if (substr($line, 0, 6) == '/paths') {
-            if (count($this->pathsMenu) == 0) {
+            $search = substr($line, 8);
+
+            if ($search) { 
+                $this->pathsMenu = $this->paths->getName($search);
+            } else {
                 $unique = md5($this->character->room . $this->character->exits->unique());
 
                 $this->pathsMenu = $this->paths->getStartUnique($unique);
             }
 
-            $selection = (int) substr($line, 7);
-            if ($selection) {
-                $selection -= 1;
+            $this->showPathsMenu();
 
-                if (!isset($this->pathsMenu[$selection])) {
-                    echo "\n\nInvalid Selection\n\n";
-                    return;
-                }
+            return;
+        }
 
-                echo "\n\nSelected path: " . $this->pathsMenu[$selection]->name;
+        if (substr($line, 0, 5) == '/path') {
+            $selection = (int) substr($line, 6);
+            
+            $selection -= 1;
 
-                $this->character->path = $this->pathsMenu[$selection];
-                $this->character->step = 0;
-                $this->character->lap = 1;
-            } else {
-                if (count($this->pathsMenu) == 0) {
-                    echo "\n\nNo paths found\n\n";
-                    return;
-                }
-                
-                echo "\n\nSelect a path:\n";
-
-                for ($i = 0; $i < count($this->pathsMenu); $i++) {
-                    echo "-> /paths " . ($i + 1) . " -> " . $this->pathsMenu[$i]->name . "\n";
-                }
-
-                echo "\n";
+            if (!isset($this->pathsMenu[$selection])) {
+                echo "\n\nInvalid Selection\n\n";
+                return;
             }
+
+            echo "\n\nSelected path: " . $this->pathsMenu[$selection]->name;
+
+            $this->character->path = $this->pathsMenu[$selection];
+            $this->character->step = 0;
+            $this->character->lap = 1;
 
             return;
         }

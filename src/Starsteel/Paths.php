@@ -37,4 +37,18 @@ class Paths {
 
         return $this->startUniques[$startUnique];
     }
+
+    function getName($name) {
+        $matches = array();
+
+        foreach ($this->startUniques as $paths) {
+            foreach ($paths as $path) {
+                if (preg_match('/' . $name . '/i',  $path->name)) {
+                    $matches[] = $path;
+                }
+            }
+        }
+
+        return $matches;
+    }
 }
