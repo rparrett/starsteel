@@ -6,8 +6,8 @@ Description of Starsteel
 Client TODO
 -----------
 
-* Save paths
-* List paths available starting at current room
+* Combine paths and do pathfinding to faraway destinations
+* Path money/item requirements
 * Resync path step if needed
 * Encumberance awareness
 * Healing while resting
