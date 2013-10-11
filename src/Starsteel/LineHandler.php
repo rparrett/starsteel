@@ -28,6 +28,19 @@ class LineHandler {
     function main() {
         $this->log->log('Taking an action');
 
+        // if we're at the end of a path and the end room is undefined, define it.
+
+        if ($this->character->path && 
+            $this->character->step == count($this->character->path->steps) && 
+            $this->character->path->endUnique == "") {
+
+            $unique = md5($this->character->room . $this->character->exits->unique());
+
+            echo "\nRe-learning path step ({$unique})\n";
+
+            $this->character->path->endUnique = $unique;
+        }
+
         if ($this->character->maxhp == 1) {
             $this->capturedStream->write("st\r\n");
             return;

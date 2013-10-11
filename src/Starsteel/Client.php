@@ -142,6 +142,9 @@ class Client {
 
         if ($line == '/savepath') {
             $this->character->path->save();
+
+            echo "\n\nPath saved.\n\n";
+
             return;
         }
 
@@ -171,7 +174,7 @@ class Client {
                 return;
             }
 
-            echo "\n\nSelected path: " . $this->pathsMenu[$selection]->name;
+            echo "\n\nSelected path: " . $this->pathsMenu[$selection]->name . "\n\n";
 
             $this->character->path = $this->pathsMenu[$selection];
             $this->character->step = 0;

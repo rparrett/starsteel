@@ -122,6 +122,7 @@ class Character {
         //
         // If (IsFollowing)
 
+
         if (!$this->auto) // || IsWaiting
             return;
 
@@ -220,11 +221,9 @@ class Character {
 
     function takeStep() {
         if ($this->path->steps[$this->step]->unique == "") {
-            echo "\nRe-learning path step\n";
-
             $unique = md5($this->room . $this->exits->unique());
-
-            echo "\n\nUnique: {$unique}\n\n";
+            
+            echo "\nRe-learning path step ({$unique})\n";
 
             $this->path->steps[$this->step]->unique = $unique;
 
