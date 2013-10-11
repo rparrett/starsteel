@@ -1,0 +1,19 @@
+<?php $extends = 'layout.thtml'; ?>
+<?php
+
+$auto   = is_null($client->character->timeAuto) ? 0 : time() - $client->character->timeAuto;
+$online = time() - $client->character->timeConnect;
+
+$xphr = $auto <= 0 ? 0 : $this->character->expEarned / $auto * 60 * 60;
+
+?>
+<h2>Stats</h2>
+<table>
+    <tr><th>Online</th><th><?=\Starsteel\Util::formatTimeInterval($online)?></th></tr>
+    <tr><td>Auto</td><td><?=\Starsteel\Util::formatTimeInterval($auto)?></td></tr>
+    <tr><td>Lap</td><td><?=$client->character->lap?></td></tr>
+    <tr><td>Monsters Killed</td><td><?=number_format($client->character->monstersKilled)?></td></tr>
+    <tr><td>Exp Earned</td><td><?=\Starsteel\Util::formatExp($client->character->expEarned)?></td></tr>
+    <tr><td>Exp Per Hour</td><td><?=\Starsteel\Util::formatExp($xphr)?></td></tr>
+    <tr><td>Health</td><td><?php echo $client->character->hp; ?> / <?php echo $client->character->maxhp; ?> ( <?php echo sprintf("%.2f%%", 100 * $client->character->hp / $client->character->maxhp); ?> )</td></tr>
+</table>

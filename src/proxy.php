@@ -29,66 +29,6 @@ $config = json_decode(file_get_contents('./config.json'), true);
 
 $loop = new React\EventLoop\StreamSelectLoop();
 
-////////////////////////////////////////////////////////////////
-// HTTP API
-////////////////////////////////////////////////////////////////
-
-$data = array('started' => time());
-$fake_app = array('templ.cache_dir'=>'', 'templ.dir'=>__DIR__.'/../templates');
-
-$templ = new Matt\Templates\Templates($fake_app);
-
-$app = function (Request $request, $response) use (&$conns, &$data, &$templ) {
-    $conns_data = array();
-
-    // Get each proxy's extracted data
-    foreach($conns as $conn) {
-        if (!$conn->getRemoteAddress()) {
-            // TODO: Fix
-            continue;
-        }
-
-        $proxy = $conns[$conn];
-        $conn_data = $proxy->getData();
-        $conn_data['ip'] = $conn->getRemoteAddress();
-        $conns_data[$proxy->getId()] = $conn_data;
-    }
-
-    echo "API Request: ".$request->getPath()." ".$request->getQuery()."\n";
-
-    // Routes
-
-    if ($request->getPath() == '/json') {
-        $response->writeHead(200, array('Content-Type' => 'application/json'));
-
-
-        $data['uptime'] = time() - $data['started'];
-
-        $response->end(json_encode(array('result'=>true, 'data'=>$data, 'conns'=>$conns_data)));
-    } elseif ($request->getPath() == '/') {
-        $response->writeHead(200, array('Content-Type' => 'text/html'));
-        $stats = array(
-            'strength', 'health', 'agility', 'intellect', 'willpower', 'charm'
-        );
-        $secondary_stats = array(
-            'magicres', 'perception', 'stealth', 'spellcasting', 'tracking', 'thievery', 'traps', 'picklocks', 'martial_arts'
-        );
-        $templ_data = array('data'=>$conns_data, 'stats'=>$stats, 'secondary_stats'=>$secondary_stats);
-        var_dump($templ_data);
-        $response->end($templ->render('characters.thtml', $templ_data));
-    } else {
-        $response->writeHead(404, array('Content-Type' => 'text/html'));
-        $response->end('<html><body>Sorry, not found!</body></html>');
-    }
-};
-
-$api_socket = new React\Socket\Server($loop);
-$http = new React\Http\Server($api_socket, $loop);
-$http->on('request', $app);
-
-$api_socket->listen($config['server']['api_port'], $config['server']['api_interface']);
-echo "API listening at http://{$config['server']['api_interface']}:{$config['server']['api_port']}\n";
-
 
 ////////////////////////////////////////////////////////////////
 // Handle Incoming Connections
@@ -130,6 +70,25 @@ $input = new Matt\InputHandler($loop);
 $input->on('line', function($line) use (&$input_log) {
 
 });
+
+
+////////////////////////////////////////////////////////////////
+// HTTP API
+////////////////////////////////////////////////////////////////
+
+$template_config = array('templ.cache_dir'=>'', 'templ.dir'=>__DIR__.'/../templates');
+$templ = new \Matt\Templates\Templates($template_config);
+$http_api = new Starsteel\API\ProxyRequestHandler($conns, $templ);
+
+$api_socket = new React\Socket\Server($loop);
+$http = new React\Http\Server($api_socket, $loop);
+$http->on('request', array($http_api, 'handle'));
+$api_socket->listen($config['server']['api_port'], $config['server']['api_interface']);
+echo "API listening at http://{$config['server']['api_interface']}:{$config['server']['api_port']}\n";
+
+////////////////////////////////////////////////////////////////
+// INPUT
+////////////////////////////////////////////////////////////////
 
 declare(ticks = 1);
 

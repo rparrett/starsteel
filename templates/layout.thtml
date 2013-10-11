@@ -1,0 +1,19 @@
+<html>
+    <title>Starsteel Web Control</title>
+    <head>
+        <link type="text/css" rel="stylesheet" href="/styles.css" />
+        <!--<link rel="shortcut icon" type="image/x-icon" href="/web/favicon.ico">-->
+    </head>
+</html>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Main</a></li>
+            <li><a href="/stats">Stats</a></li>
+            <li><a href="/json">JSON</a></li>
+        </ul>
+    </nav>
+    <div>
+        <?=$child_content?>
+    </div>
+</body>

@@ -33,6 +33,17 @@ class Client {
         $this->pathsMenu = array();
     }
 
+    function serializable() {
+        $safe_options = $this->options;
+        $safe_options['password'] = '********';
+
+        return array(
+            'character' => $this->character->serializable(),
+            'paths' => $this->paths,
+            'options' => $safe_options
+        );
+    }
+
     function connect() {
         return $this->connector->create(
             $this->options['host'],

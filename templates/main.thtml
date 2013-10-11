@@ -1,0 +1,2 @@
+<?php $extends = 'layout.thtml'; ?>
+<h2>Starsteel Web Control</h2>

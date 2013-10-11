@@ -47,17 +47,17 @@
         },
         {
             "name": "guzzle/parser",
-            "version": "v3.7.2",
+            "version": "v3.7.4",
             "target-dir": "Guzzle/Parser",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/parser.git",
-                "reference": "v3.7.2"
+                "reference": "a25c2ddda1c52fb69a4ee56eb530b13ddd9573c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/parser/zipball/v3.7.2",
-                "reference": "v3.7.2",
+                "url": "https://api.github.com/repos/guzzle/parser/zipball/a25c2ddda1c52fb69a4ee56eb530b13ddd9573c2",
+                "reference": "a25c2ddda1c52fb69a4ee56eb530b13ddd9573c2",
                 "shasum": ""
             },
             "require": {
@@ -138,12 +138,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/react.git",
-                "reference": "96ec97a2b28d5351916370020d5a39e3831533ec"
+                "reference": "0dac387e29f10db50dc23acc1da746f53862a662"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/react/zipball/96ec97a2b28d5351916370020d5a39e3831533ec",
-                "reference": "96ec97a2b28d5351916370020d5a39e3831533ec",
+                "url": "https://api.github.com/repos/reactphp/react/zipball/0dac387e29f10db50dc23acc1da746f53862a662",
+                "reference": "0dac387e29f10db50dc23acc1da746f53862a662",
                 "shasum": ""
             },
             "require": {
@@ -186,7 +186,7 @@
                 "event-loop",
                 "reactor"
             ],
-            "time": "2013-07-21 02:23:09"
+            "time": "2013-09-22 12:33:29"
         }
     ],
     "packages-dev": [

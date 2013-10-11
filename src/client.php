@@ -85,6 +85,29 @@ $connector = new Connector($loop, $dns);
 $client = new Client($loop, $connector, $options, $log);
 $client->connect();
 
+////////////////////////////////////////////////////////////////
+// HTTP API
+////////////////////////////////////////////////////////////////
+
+$api_options = array('api_port' => 1337, 'api_interface' => '0.0.0.0');
+$template_config = array('templ.cache_dir'=>'', 'templ.dir'=>__DIR__.'/../templates');
+
+$templ = new \Matt\Templates\Templates($template_config);
+$http_api = new Starsteel\API\ClientRequestHandler($client, $templ, __DIR__.'/../web');
+
+$api_socket = new React\Socket\Server($loop);
+$http = new React\Http\Server($api_socket, $loop);
+$http->on('request', array($http_api, 'handle'));
+$api_socket->listen($api_options['api_port'], $api_options['api_interface']);
+
+echo "API listening at http://{$api_options['api_interface']}:{$api_options['api_port']}\n";
+
+
+////////////////////////////////////////////////////////////////
+// INPUT
+////////////////////////////////////////////////////////////////
+
+
 declare(ticks = 1);
 
 // Keyboard interrupt handler

@@ -52,6 +52,16 @@ class Character {
         $this->options = $options;
     }
 
+    function serializable() {
+        return array(
+            'hp' => $this->hp,
+            'hp_max' => $this->maxhp,
+            'room' => $this->room,
+            'room_monsters' => implode(', ', $this->monstersInRoom),
+            'room_items' => implode(', ', $this->itemsInRoom)
+        );
+    }
+
     function setStream(&$stream) {
         $this->stream = $stream;
     }
