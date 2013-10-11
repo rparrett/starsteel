@@ -29,7 +29,7 @@ class ClientRequestHandler implements APIRequestHandler {
     public function handle(\React\Http\Request $request, $response) {
         $conns_data = $this->getConnectionStats();
 
-        echo "API Request: ".$request->getPath()." ".$request->getQuery()."\n";
+        echo "API Request: ".$request->getPath()."\n";
 
         // Routes
 

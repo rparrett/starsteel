@@ -4,7 +4,7 @@
 $auto   = is_null($client->character->timeAuto) ? 0 : time() - $client->character->timeAuto;
 $online = time() - $client->character->timeConnect;
 
-$xphr = $auto <= 0 ? 0 : $this->character->expEarned / $auto * 60 * 60;
+$xphr = $auto <= 0 ? 0 : $client->character->expEarned / $auto * 60 * 60;
 
 ?>
 <h2>Stats</h2>
