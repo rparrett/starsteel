@@ -30,10 +30,17 @@ class Path {
         if ($contents === null)
             return false;
 
-        $this->name = $contents->name;
-        $this->startUnique = $contents->startUnique;
-        $this->endUnique = $contents->endUnique;
-        $this->categories = $contents->categories;
+        if (isset($contents->name))
+            $this->name = $contents->name;
+
+        if (isset($contents->endUnique))
+            $this->startUnique = $contents->startUnique;
+
+        if (isset($contents->endUnique))
+            $this->endUnique = $contents->endUnique;
+
+        if (isset($contents->categories))
+            $this->categories = $contents->categories;
 
         if (isset($contents->loop))
             $this->loop = $contents->loop;
