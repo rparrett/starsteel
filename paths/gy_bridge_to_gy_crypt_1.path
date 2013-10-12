@@ -1,15 +1,1 @@
-{
-    "name":"Silvermere Town Square to Graveyard Bridge",
-    "categories":["graveyard"],
-    "startUnique":"",
-    "endUnique":"",
-    "steps":[
-        {"command":"ne","unique":""},
-        {"command":"e","unique":""},
-        {"command":"e","unique":""},
-        {"command":"n","unique":""},
-        {"command":"bash n","unique":""},
-        {"command":"n","unique":""},
-        {"command":"d","unique":""}
-    ]
-}
+{"name":"Graveyard Bridge to Crypt Level 1","startUnique":"36f129562ff47d7e4268e10e77a9d93e","endUnique":"d1934ea3c3fb7c152f38c63d57468149","categories":["graveyard"],"steps":[{"unique":"36f129562ff47d7e4268e10e77a9d93e","command":"ne"},{"unique":"7be6952f886033e286b0bd01e4ad4163","command":"e"},{"unique":"0a44d90ea5108fbf22f4e28e79074571","command":"e"},{"unique":"0a44d90ea5108fbf22f4e28e79074571","command":"n"},{"unique":"","command":"bash n"},{"unique":"d1934ea3c3fb7c152f38c63d57468149","command":"n"},{"unique":"d1934ea3c3fb7c152f38c63d57468149","command":"d"}]}
