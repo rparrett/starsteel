@@ -7,6 +7,7 @@ class Exits implements \arrayaccess {
     public static $normal = 1;
     public static $closed_door = 2;
     public static $open_door = 3;
+    public static $secret = 4;
     
     private static $longToShort = array(
         'up'    => 'u',
@@ -58,6 +59,8 @@ class Exits implements \arrayaccess {
         $unique = "";
 
         foreach ($this->container as $key => $value) {
+            if ($value == Exits::$secret) continue;
+
             if ($value == Exits::$open_door || $value == Exits::$closed_door) {
                 $unique .= "door";
             }

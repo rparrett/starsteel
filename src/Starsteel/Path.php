@@ -9,8 +9,10 @@ class Path {
 
     public $steps = array();
 
-    public $startUnique = null;
-    public $endUnique = null;
+    public $startUnique = "";
+    public $endUnique = "";
+
+    public $loop = false;
 
     public $categories = array();
 
@@ -33,6 +35,9 @@ class Path {
         $this->endUnique = $contents->endUnique;
         $this->categories = $contents->categories;
 
+        if (isset($contents->loop))
+            $this->loop = $contents->loop;
+
         foreach ($contents->steps as $step) {
             $this->steps[] = new PathStep($step->unique, $step->command);
         }
@@ -43,6 +48,7 @@ class Path {
     function save() {
         $contents = array(
             'name' => $this->name,
+            'loop' => $this->loop,
             'startUnique' => $this->startUnique,
             'endUnique' => $this->endUnique,
             'categories' => $this->categories,
@@ -54,10 +60,6 @@ class Path {
         }
 
         file_put_contents($this->filename, json_encode($contents));
-    }
-
-    function isLoop() {
-        return ($this->startUnique == $this->endUnique);
     }
 }
 

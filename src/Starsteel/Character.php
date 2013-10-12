@@ -155,6 +155,17 @@ class Character {
         // 
         // Are we running out of necessity?
         // Display reason why
+        
+        if ($this->path->steps[$this->step]->unique == "") {
+            $unique = md5($this->room . $this->exits->unique());
+            
+            echo "\nRe-learning path step ({$unique})\n";
+
+            $this->path->steps[$this->step]->unique = $unique;
+
+            if ($this->step == 0 && $this->path->startUnique == "")
+                $this->path->startUnique = $unique;
+        }
 
         // TODO Picklock instead of bash?
 
@@ -178,7 +189,7 @@ class Character {
         if (substr($this->path->steps[$this->step]->command, 0, 6) == "search") {
             $dir = substr($this->path->steps[$this->step]->command, 7);
 
-            if ($this->exits[$dir] !== Exits::$normal) {
+            if ($this->exits[$dir] !== Exits::$secret) {
                 $this->stream->write("search "  . $dir . "\r\n");
 
                 // TODO: modify exits when we see "found an exit"
@@ -219,7 +230,7 @@ class Character {
 
         // We are on a loop
         if ($this->step >= count($this->path->steps)) {
-            if ($this->path->isLoop()) {
+            if ($this->path->loop) {
                 $this->step = 0;
             } else {
                 // We have arrived at our destination.
@@ -230,23 +241,12 @@ class Character {
     }
 
     function takeStep() {
-        if ($this->path->steps[$this->step]->unique == "") {
-            $unique = md5($this->room . $this->exits->unique());
-            
-            echo "\nRe-learning path step ({$unique})\n";
-
-            $this->path->steps[$this->step]->unique = $unique;
-
-            if ($this->step == 0 && $this->path->startUnique == "")
-                $this->path->startUnique = $unique;
-        }
-
         $this->stream->write($this->path->steps[$this->step]->command . "\r\n");
         $this->step++;
 
         // We are on a loop
         if ($this->step >= count($this->path->steps)) {
-            if ($this->path->isLoop()) {
+            if ($this->path->loop) {
                 $this->step = 0;
                 $this->lap++;
             } else {

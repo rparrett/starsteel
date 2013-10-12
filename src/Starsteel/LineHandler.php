@@ -253,11 +253,13 @@ class LineHandler {
             
             $this->character->exits->clear();
 
-            if (preg_match_all('/(closed|open)? ?(door|trap door|gate)? ?(NONE!|north|south|east|west|northeast|northwest|southeast|southwest|up|down|above|below)/', $matches[1], $submatches, PREG_SET_ORDER)) 
+            if (preg_match_all('/(closed|open)? ?(door|trap door|gate|secret passage)? ?(NONE!|north|south|east|west|northeast|northwest|southeast|southwest|up|down|above|below)/i', $matches[1], $submatches, PREG_SET_ORDER)) 
             {
                 foreach ($submatches as $submatch) {
                     if ($submatch[1] == "closed") {
                         $this->character->exits[$submatch[3]] = Exits::$closed_door;
+                    } else if (strtolower($submatch[2]) == "secret passage") {
+                        $this->character->exits[$submatch[3]] = Exits::$secret;
                     } else if ($submatch[2]) {
                         $this->character->exits[$submatch[3]] = Exits::$open_door;
                     } else {
