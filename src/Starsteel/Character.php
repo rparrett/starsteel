@@ -172,10 +172,6 @@ class Character {
         if ($this->exits[$this->path->steps[$this->step]->command] == Exits::$closed_door) {
             $this->stream->write("bash "  . $this->path->steps[$this->step]->command . "\r\n");
 
-            // TODO: modify exits when we see "bashed the door open"
-            // so that we don't have to re-examine the room
-
-            $this->stream->write("\r\n");
             $this->setState(self::$STATE_NOTHING);
             return;
         }

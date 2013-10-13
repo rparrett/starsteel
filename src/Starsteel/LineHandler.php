@@ -197,6 +197,14 @@ class LineHandler {
             $this->character->roomChanged = true;
         }
 
+        if (preg_match('/You bashed the door open./', $line, $matches)) {
+            $this->character->roomChanged = true;
+        }
+       
+        if (preg_match('/The door is already open./', $line, $matches)) {
+            $this->character->roomChanged = true;
+        }
+
         if ($line == "You say \"" . $this->character->lastAttackCmd . "\"\r\n") {
             $this->log->log('Whiffed, resetting state and re-checking room');
 
