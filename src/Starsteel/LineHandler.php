@@ -193,6 +193,10 @@ class LineHandler {
             $this->character->roomChanged = true;
         }
 
+        if (preg_match('/materializes in the room./', $line, $matches)) {
+            $this->character->roomChanged = true;
+        }
+
         if ($line == "You say \"" . $this->character->lastAttackCmd . "\"\r\n") {
             $this->log->log('Whiffed, resetting state and re-checking room');
 
@@ -253,9 +257,13 @@ class LineHandler {
             
             $this->character->exits->clear();
 
-            if (preg_match_all('/(closed|open)? ?(door|trap door|gate|secret passage)? ?(NONE!|north|south|east|west|northeast|northwest|southeast|southwest|up|down|above|below)/i', $matches[1], $submatches, PREG_SET_ORDER)) 
-            {
-                foreach ($submatches as $submatch) {
+            $exits = explode(',', $matches[1]);
+
+            foreach ($exits as $exit) {
+                if (preg_match('/(closed|open)? ?(door|trap door|gate|secret passage)? ?(NONE!|northeast|northwest|southeast|southwest|north|south|east|west|up|down|above|below)/i', $exit, $submatch)) 
+                {
+                    $this->log->log(print_r($submatch, true));
+
                     if ($submatch[1] == "closed") {
                         $this->character->exits[$submatch[3]] = Exits::$closed_door;
                     } else if (strtolower($submatch[2]) == "secret passage") {
@@ -265,9 +273,9 @@ class LineHandler {
                     } else {
                         $this->character->exits[$submatch[3]] = Exits::$normal;
                     }
-                }
 
-                $this->log->log($this->character->exits->unique());
+                    $this->log->log($this->character->exits->unique());
+                }
             }
         }
     }

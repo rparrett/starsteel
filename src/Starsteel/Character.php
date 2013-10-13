@@ -169,21 +169,15 @@ class Character {
 
         // TODO Picklock instead of bash?
 
-        if (substr($this->path->steps[$this->step]->command, 0, 4) == "bash") {
-            $dir = substr($this->path->steps[$this->step]->command, 5);
+        if ($this->exits[$this->path->steps[$this->step]->command] == Exits::$closed_door) {
+            $this->stream->write("bash "  . $this->path->steps[$this->step]->command . "\r\n");
 
-            if ($this->exits[$dir] == Exits::$closed_door) {
-                $this->stream->write("bash "  . $dir . "\r\n");
+            // TODO: modify exits when we see "bashed the door open"
+            // so that we don't have to re-examine the room
 
-                // TODO: modify exits when we see "bashed the door open"
-                // so that we don't have to re-examine the room
-
-                $this->stream->write("\r\n");
-                $this->setState(self::$STATE_NOTHING);
-                return;
-            } else {
-                $this->skipStep();
-            }
+            $this->stream->write("\r\n");
+            $this->setState(self::$STATE_NOTHING);
+            return;
         }
 
         if (substr($this->path->steps[$this->step]->command, 0, 6) == "search") {
